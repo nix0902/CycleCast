@@ -16,7 +16,8 @@ cyclecast/
 ├── docs/                        # Project Documentation
 ├── scripts/                     # Utility Scripts
 ├── configs/                     # Configuration Files
-├── AI.md                        # Universal AI Agent Quick Reference (Claude, GPT-4, Kimi, Qwen...)
+├── AGENTS.md                    # Open standard for AI agents (OpenAI, Claude, Gemini, Qwen, Cursor...)
+├── AI.md                        # Universal AI Agent Quick Reference
 ├── CLAUDE.md                    # Redirect to AI.md (backward compatibility)
 ├── README.md                    # Project Overview
 ├── Makefile                     # Build Commands

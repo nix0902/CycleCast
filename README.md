@@ -5,7 +5,10 @@
 
 ---
 
-> 🤖 **Для ИИ агентов (Claude, GPT-4, Kimi, Qwen и др.):** См. [AI.md](./AI.md) — универсальная quick reference карта проекта для быстрой навигации.
+> 🤖 **Для ИИ агентов:**
+> - **[AGENTS.md](./AGENTS.md)** — открытый стандарт (OpenAI, Claude, Gemini, Qwen, Cursor, Copilot, Windsurf...)
+> - **[CLAUDE.md](./CLAUDE.md)** → редирект на AI.md
+> - **[AI.md](./AI.md)** — универсальная quick reference
 
 ---
 
