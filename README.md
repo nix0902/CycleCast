@@ -6,6 +6,7 @@
 ---
 
 > 🤖 **Для ИИ агентов:**
+> - **[WORKLOG.md](./WORKLOG.md)** — 📋 Журнал работы (что сделано / что делать дальше)
 > - **[AGENTS.md](./AGENTS.md)** — открытый стандарт (OpenAI, Claude, Gemini, Qwen, Cursor, Copilot, Windsurf...)
 > - **[CLAUDE.md](./CLAUDE.md)** → редирект на AI.md
 > - **[AI.md](./AI.md)** — универсальная quick reference

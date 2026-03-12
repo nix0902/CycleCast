@@ -17,6 +17,7 @@ cyclecast/
 ├── scripts/                     # Utility Scripts
 ├── configs/                     # Configuration Files
 ├── AGENTS.md                    # Open standard for AI agents (OpenAI, Claude, Gemini, Qwen, Cursor...)
+├── WORKLOG.md                   # Agent work log (what done / what's next)
 ├── AI.md                        # Universal AI Agent Quick Reference
 ├── CLAUDE.md                    # Redirect to AI.md (backward compatibility)
 ├── README.md                    # Project Overview

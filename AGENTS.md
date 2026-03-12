@@ -143,6 +143,46 @@ Every strategy MUST pass:
 
 ---
 
+## 🤖 Agent Workflow (REQUIRED)
+
+### Start of Session:
+1. **Read [WORKLOG.md](WORKLOG.md)** → Check last entry for "What to do next"
+2. **Read [docs/TZ.md](docs/TZ.md)** → Understand requirements
+3. **Read [docs/PLAN.md](docs/PLAN.md)** → Find current phase and Task ID
+4. **Start working**
+
+### End of Session:
+1. **Add entry to WORKLOG.md** (at the top of history)
+2. **Update status table** in WORKLOG.md
+3. **Specify "What to do next"** for next agent
+4. **Link to documentation sections** you worked with
+
+### Entry Format:
+```markdown
+---
+**Task ID:** [From PLAN.md]
+**Agent:** [Your name: Claude, GPT-4, Kimi, Qwen...]
+**Date:** [YYYY-MM-DD HH:MM]
+**Duration:** [Time spent]
+
+## Что сделано
+- [x] Completed task
+- [ ] Incomplete task
+
+## Изменённые файлы
+- `path/to/file` - description
+
+## Что делать дальше
+1. Next task for next agent
+
+## Связь с документацией
+- **TZ:** Section X.X
+- **PLAN:** Phase N, Week M
+- **TECHNICAL_SOLUTION:** Section X.X
+```
+
+---
+
 ## Documentation
 
 | File | Purpose |
