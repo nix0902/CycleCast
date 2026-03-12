@@ -16,7 +16,8 @@ cyclecast/
 ├── docs/                        # Project Documentation
 ├── scripts/                     # Utility Scripts
 ├── configs/                     # Configuration Files
-├── CLAUDE.md                    # AI Agent Quick Reference
+├── AI.md                        # Universal AI Agent Quick Reference (Claude, GPT-4, Kimi, Qwen...)
+├── CLAUDE.md                    # Redirect to AI.md (backward compatibility)
 ├── README.md                    # Project Overview
 ├── Makefile                     # Build Commands
 ├── docker-compose.yml           # Local Development
