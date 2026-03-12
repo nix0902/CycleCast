@@ -9,6 +9,45 @@
 
 ---
 
+## 📚 Документация проекта
+
+### Критически важные файлы
+
+| Файл | Назначение |
+|------|------------|
+| **[docs/TZ.md](docs/TZ.md)** | Техническое задание v3.2 Final |
+| **[docs/PLAN.md](docs/PLAN.md)** | План разработки (44 недели, 11 фаз) |
+| **[docs/TECHNICAL_SOLUTION.md](docs/TECHNICAL_SOLUTION.md)** | Техническое решение (архитектура) |
+
+### Спецификации для разработки
+
+| Файл | Назначение |
+|------|------------|
+| **[docs/API.md](docs/API.md)** | REST/gRPC API спецификация (endpoints, request/response) |
+| **[docs/DATABASE_SCHEMA.md](docs/DATABASE_SCHEMA.md)** | ER-диаграмма, SQL схемы всех таблиц |
+| **[docs/CONVENTIONS.md](docs/CONVENTIONS.md)** | Код-стайл (Go, Python, TypeScript, SQL) |
+| **[docs/SECURITY.md](docs/SECURITY.md)** | Auth, JWT, Vault, RBAC, TLS |
+
+### Вспомогательные файлы
+
+| Файл | Назначение |
+|------|------------|
+| **[docs/GLOSSARY.md](docs/GLOSSARY.md)** | Глоссарий терминов (FTE, QSpectrum, COT, GBTC Index...) |
+| **[docs/ERRORS.md](docs/ERRORS.md)** | Коды ошибок по модулям (MD001, AC001, QS001...) |
+| **[docs/TESTING.md](docs/TESTING.md)** | Стратегия тестирования, примеры |
+| **[docs/MOCK_DATA.md](docs/MOCK_DATA.md)** | Тестовые данные, seed scripts |
+| **[docs/FILE_STRUCTURE.md](docs/FILE_STRUCTURE.md)** | Полная структура проекта |
+
+### Конфигурация
+
+| Файл | Назначение |
+|------|------------|
+| **[Makefile](Makefile)** | Команды разработки (`make run`, `make test`) |
+| **[docker-compose.yml](docker-compose.yml)** | Локальная инфраструктура |
+| **[.env.example](.env.example)** | Шаблон переменных окружения |
+
+---
+
 <p align="center">
   <a href="#-методология-ларри-вильямса">Методология</a> •
   <a href="#-компоненты">Компоненты</a> •

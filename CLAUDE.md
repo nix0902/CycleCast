@@ -2,6 +2,47 @@
 
 > **Версия:** 3.2 Final | **Обновлено:** 2026-03-12
 
+---
+
+## 📚 ДОКУМЕНТАЦИЯ (Начинай отсюда!)
+
+### Критически важные файлы
+
+| Файл | Назначение | Когда читать |
+|------|------------|--------------|
+| **[docs/TZ.md](docs/TZ.md)** | Техническое задание | Понять ЧТО строим |
+| **[docs/PLAN.md](docs/PLAN.md)** | План разработки (44 недели) | Понять ЭТАПЫ и сроки |
+| **[docs/TECHNICAL_SOLUTION.md](docs/TECHNICAL_SOLUTION.md)** | Техническое решение | Понять КАК строим |
+
+### Спецификации для разработки
+
+| Файл | Назначение | Когда читать |
+|------|------------|--------------|
+| **[docs/API.md](docs/API.md)** | REST/gRPC API спецификация | Создавать endpoints |
+| **[docs/DATABASE_SCHEMA.md](docs/DATABASE_SCHEMA.md)** | ER-диаграмма, SQL схемы | Создавать таблицы |
+| **[docs/CONVENTIONS.md](docs/CONVENTIONS.md)** | Код-стайл, naming | Писать код |
+| **[docs/SECURITY.md](docs/SECURITY.md)** | Auth, JWT, Vault | Реализовывать безопасность |
+
+### Вспомогательные файлы
+
+| Файл | Назначение |
+|------|------------|
+| **[docs/GLOSSARY.md](docs/GLOSSARY.md)** | Глоссарий терминов (FTE, QSpectrum, COT...) |
+| **[docs/ERRORS.md](docs/ERRORS.md)** | Коды ошибок (MD001, AC002, QS001...) |
+| **[docs/TESTING.md](docs/TESTING.md)** | Стратегия тестирования |
+| **[docs/MOCK_DATA.md](docs/MOCK_DATA.md)** | Тестовые данные |
+| **[docs/FILE_STRUCTURE.md](docs/FILE_STRUCTURE.md)** | Полная структура проекта |
+
+### Конфигурация
+
+| Файл | Назначение |
+|------|------------|
+| **[.env.example](.env.example)** | Шаблон переменных окружения |
+| **[Makefile](Makefile)** | Команды сборки и разработки |
+| **[docker-compose.yml](docker-compose.yml)** | Локальная инфраструктура |
+
+---
+
 ## 🗺️ КАРТА ПРОЕКТА (Top-Level)
 
 ```
@@ -11,7 +52,7 @@ cyclecast/
 ├── quant/             # Python Math/ML Services
 ├── infrastructure/    # Docker, K8s, Terraform
 ├── database/          # Migrations, Schemas, Seeds
-├── docs/              # Документация проекта
+├── docs/              # 📚 Документация проекта (см. выше)
 ├── scripts/           # Utility scripts
 └── configs/           # Конфигурации (YAML, ENV)
 ```
@@ -59,11 +100,7 @@ backend/
 │   │   ├── lineage/
 │   │   └── workflow/
 │   ├── repository/             # Data access
-│   ├── transport/              # API handlers
-│   │   ├── rest/
-│   │   ├── grpc/
-│   │   └── ws/
-│   └── pkg/                    # Internal utilities
+│   └── transport/              # API handlers (REST, gRPC, WS)
 ├── pkg/                        # Public packages
 └── tests/                      # Backend tests
 ```
@@ -82,114 +119,33 @@ quant/
 └── main.py                     # gRPC server entry
 ```
 
-### infrastructure/
-```
-infrastructure/
-├── docker/                     # Dockerfiles
-├── kubernetes/                 # K8s manifests
-├── terraform/                  # Infrastructure as Code
-└── monitoring/                 # Prometheus, Grafana
-```
-
-### database/
-```
-database/
-├── migrations/                 # SQL migrations
-├── schemas/                    # Schema definitions
-├── seeds/                      # Test data
-└── timescaledb/                # TimescaleDB setup
-```
-
-### docs/
-```
-docs/
-├── TZ.md                       # Техническое задание
-├── PLAN.md                     # План разработки
-├── TECHNICAL_SOLUTION.md       # Техническое решение
-├── FILE_STRUCTURE.md           # Детальная структура
-├── API.md                      # API документация
-└── algorithms/                 # Описания алгоритмов
-```
-
 ---
 
 ## 🔑 КЛЮЧЕВЫЕ ФАЙЛЫ (Quick Access)
 
 | Назначение | Путь |
 |------------|------|
-| **ТЗ** | `docs/TZ.md` |
-| **План разработки** | `docs/PLAN.md` |
-| **Тех. решение** | `docs/TECHNICAL_SOLUTION.md` |
 | **API сервер** | `backend/cmd/api/main.go` |
 | **Python gRPC** | `quant/main.py` |
 | **Frontend entry** | `frontend/src/app/page.tsx` |
 | **gRPC proto** | `quant/proto/quant.proto` |
 | **DB migrations** | `database/migrations/` |
-| **Docker Compose** | `infrastructure/docker/docker-compose.yml` |
 | **Config** | `configs/config.yaml` |
 
 ---
 
-## 📝 КОНВЕНЦИИ
+## 📝 КОНВЕНЦИИ (кратко)
 
-### Именование файлов
 | Тип | Pattern | Пример |
 |-----|---------|--------|
 | Go service | `*_service.go` | `marketdata_service.go` |
 | Go repository | `*_repository.go` | `signal_repository.go` |
-| Go handler | `*_handler.go` | `analysis_handler.go` |
 | React component | `PascalCase.tsx` | `CompositeLineChart.tsx` |
 | React hook | `use*.ts` | `useAnnualCycle.ts` |
 | Python module | `snake_case.py` | `burg_mem.py` |
 | Test (Go) | `*_test.go` | `backdate_test.go` |
-| Test (Python) | `test_*.py` | `test_dtw.py` |
-| Migration | `NNNN_description.sql` | `0001_initial_schema.sql` |
 
-### Структура Go модуля
-```
-service/
-├── service.go          # Interface definition
-├── service_impl.go     # Implementation
-├── repository.go       # Data access interface
-├── repository_pg.go    # PostgreSQL implementation
-├── models.go           # Domain models
-└── service_test.go     # Tests
-```
-
-### Структура Python модуля
-```
-module/
-├── __init__.py
-├── core.py             # Main logic
-├── utils.py            # Helpers
-├── types.py            # Type definitions
-└── test_core.py        # Tests
-```
-
----
-
-## 🚀 ЧАСТЫЕ ОПЕРАЦИИ
-
-### Добавить новый API endpoint
-1. Domain: `backend/internal/domain/new_model.go`
-2. Service: `backend/internal/service/new_service/`
-3. Handler: `backend/internal/transport/rest/new_handler.go`
-4. Route: `backend/internal/transport/rest/routes.go`
-
-### Добавить новый Python алгоритм
-1. Module: `quant/new_algorithm/`
-2. Proto: `quant/proto/quant.proto` (если нужен gRPC)
-3. Integration: `quant/main.py`
-4. Go client: `backend/internal/pkg/quant_client/`
-
-### Добавить React компонент
-1. Component: `frontend/src/components/category/Component.tsx`
-2. Types: `frontend/src/types/component.ts`
-3. Hook (если нужен): `frontend/src/hooks/useComponent.ts`
-
-### Добавить миграцию БД
-1. Migration: `database/migrations/NNNN_description.sql`
-2. Apply: `make migrate-up`
+**Подробнее:** [docs/CONVENTIONS.md](docs/CONVENTIONS.md)
 
 ---
 
@@ -198,7 +154,6 @@ module/
 ```bash
 # Backend
 make run-api          # Запуск API сервера
-make run-worker       # Запуск worker
 make test             # Тесты
 make migrate-up       # Миграции БД
 
@@ -208,7 +163,7 @@ cd frontend && bun dev
 # Python Quant
 cd quant && python main.py
 
-# Docker
+# Docker (полная инфраструктура)
 docker-compose up -d
 ```
 
@@ -225,6 +180,19 @@ docker-compose up -d
 | Infrastructure | Не начат | Phase 1 |
 
 **Следующий шаг:** Phase 0 - Backtesting & Math Prototyping
+
+---
+
+## 🚀 АЛГОРИТМ РАБОТЫ ИИ АГЕНТА
+
+```
+1. Прочитать CLAUDE.md (этот файл)
+2. Прочитать docs/TZ.md (понять требования)
+3. Прочитать docs/PLAN.md (понять текущую фазу)
+4. Прочитать docs/API.md (понять endpoints)
+5. Прочитать docs/DATABASE_SCHEMA.md (понять таблицы)
+6. Приступить к разработке
+```
 
 ---
 
