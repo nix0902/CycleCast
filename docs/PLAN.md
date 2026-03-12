@@ -1,6 +1,6 @@
 # ДЕТАЛЬНЫЙ ПЛАН РАЗРАБОТКИ
 ## Система циклического анализа и прогнозирования финансовых рынков
-### CycleCast - Методология Ларри Вильямса v3.0
+### CycleCast v3.2 Final - Методология Ларри Вильямса
 
 ---
 
@@ -8,51 +8,35 @@
 
 | Параметр | Значение |
 |----------|----------|
-| Название | CycleCast v3.0 |
-| Длительность | 40 недель (вместо 34) |
-| Команда | 5-6 человек |
+| Название | CycleCast v3.2 Final |
+| Длительность | 44 недели (~11 месяцев) |
+| Команда | 6-7 человек |
 | Стек | Go, Python, PostgreSQL, TimescaleDB, Redis, React |
 
 ---
 
-## 2. ТЕХНОЛОГИЧЕСКИЙ СТЕК
+## 2. ФАЗЫ РАЗРАБОТКИ
 
-| Компонент | Технология | Обоснование |
-|-----------|------------|-------------|
-| **Backend (Core)** | Go 1.22+ | Высокая производительность, параллелизм |
-| **Python Quant** | Python 3.11+ | NumPy, SciPy, Burg's MEM, DTW, Bootstrap |
-| **Frontend** | React 18 + TypeScript + Vite | Современный UI |
-| **База данных** | PostgreSQL 16 + TimescaleDB | Временные ряды |
-| **Кэш** | Redis 7 | Быстрый кэш |
-| **API** | REST (Gin) + gRPC | Совместимость |
-| **Secrets** | HashiCorp Vault | Безопасность |
-
----
-
-## 3. ФАЗЫ РАЗРАБОТКИ
-
-### Phase 0: Backtesting Engine & Math Prototyping (Недели 1-4) **НОВОЕ**
-
-| Неделя | Задача | Результат |
-|--------|--------|-----------|
-| 1.1 | Python-прототип QSpectrum | Jupyter Notebook с Burg's MEM |
-| 1.2 | Python-прототип DTW | Валидация Phenomenological |
-| 1.3 | Robust Normalization (Percentile Rank) | Тест на GBTC данных |
-| 2.1 | Backtest Engine (Go) | Симуляция на истории |
-| 2.2 | Учёт комиссий/проскальзывания | Реалистичные метрики |
-| 3.1 | In-Sample / Out-of-Sample | Разделение данных |
-| 3.2 | Метрики (Sharpe, MaxDD) | Отчёт по стратегии |
-| 3.3 | Bootstrap CI (1000 итераций) | Доверительные интервалы |
-| 4.1 | Валидация на BTC/GBTC | Тест 2020-2025 |
-| 4.2 | Chow Test валидация | Структурный сдвиг 2024 |
-| 4.3 | Go/No-Go решение | Продолжать или стоп |
+### Phase 0: Backtesting & Math Prototyping (Недели 1-4) **КРИТИЧЕСКИЙ**
+| Неделя | Задача | Результат | Go/No-Go Критерий |
+|--------|--------|-----------|-------------------|
+| 1.1 | Python-прототип QSpectrum | Jupyter Notebook с Burg's MEM | < 3 сек на 10 лет |
+| 1.2 | Python-прототип DTW (гибрид) | Валидация Phenomenological | < 3 сек на 10 лет |
+| 1.3 | Robust Normalization | Percentile Rank тест | — |
+| 2.1 | Backtest Engine (Go) | Симуляция на истории | — |
+| 2.2 | Учёт комиссий/проскальзывания | Реалистичные метрики | — |
+| 3.1 | In-Sample / Out-of-Sample | Разделение данных | — |
+| 3.2 | Метрики (Sharpe, MaxDD) | Отчёт по стратегии | — |
+| 3.3 | Bootstrap CI (streaming) | 1000 итераций | — |
+| 4.1 | Валидация на BTC/GBTC | Тест 2020-2025 | — |
+| 4.2 | Chow Test + Regime Detection | Структурный сдвиг | — |
+| **4.3** | **Go/No-Go Decision** | **Решение о продолжении** | **Sharpe > 1.0, FTE > 0.08, GBTC > 0.5, CI > 0** |
 
 **Критерий завершения:** Equity curve > 0 на out-of-sample данных, p-value < 0.05
 
 ---
 
 ### Phase 1: Фундамент (Недели 5-8)
-
 | Неделя | Задача | Результат |
 |--------|--------|-----------|
 | 5.1 | Go проект, структура | go.mod, директории |
@@ -60,26 +44,24 @@
 | 6.1 | Схема БД + миграции | Таблицы, индексы |
 | 6.2 | Repository layer | CRUD операции |
 | 7.1 | Market Data Service | Импорт, API провайдеры |
-| 7.2 | Валидация данных | Очистка, нормализация |
+| 7.2 | Circuit Breaker | Graceful degradation |
 | 8.1 | API Gateway (Gin) | Роутинг, middleware |
 | 8.2 | Swagger/OpenAPI | Документация |
 
 ---
 
 ### Phase 2: Annual Cycle & Seasonality (Недели 9-11)
-
 | Неделя | Задача | Результат |
 |--------|--------|-----------|
 | 9.1 | Загрузка 30-50 лет данных | Исторические OHLC |
 | 9.2 | Детрендинг + нормализация | Сезонная кривая |
 | 10.1 | FTE валидация | Корреляция прогноз/факт |
-| 10.2 | Адаптивный порог (Crypto 0.08) | Фильтрация моделей |
+| 10.2 | Адаптивный порог | Regime detection |
 | 11.1 | Seasonality Dashboard | Визуализация (React) |
 
 ---
 
 ### Phase 3: QSpectrum & Composite Line (Недели 12-15)
-
 | Неделя | Задача | Результат |
 |--------|--------|-----------|
 | 12.1 | Python gRPC сервис | Интеграция Go ↔ Python |
@@ -93,21 +75,20 @@
 ---
 
 ### Phase 4: Decennial Patterns (Недели 16-18)
-
 | Неделя | Задача | Результат |
 |--------|--------|-----------|
 | 16.1 | Группировка по yearDigit | Паттерны 0-9 |
 | 16.2 | Нормализация | Масштаб 0-1 |
 | 17.1 | Корреляция с текущим годом | Similarity Score |
 | 17.2 | API endpoints | /analysis/decennial |
+| 18.1 | Отключение для crypto | < 30 лет данных |
 
 ---
 
 ### Phase 5: Phenomenological Model (Недели 19-21)
-
 | Неделя | Задача | Результат |
 |--------|--------|-----------|
-| 19.1 | DTW (Python) | Поиск аналогий |
+| 19.1 | DTW гибридный (Python) | Поиск аналогий |
 | 19.2 | Фильтр по Decennial | yearDigit фильтр |
 | 20.1 | Best Matches Ranking | Топ совпадений |
 | 20.2 | Проекция продолжения | Прогноз |
@@ -116,25 +97,22 @@
 ---
 
 ### Phase 6: COT/GBTC Analysis (Недели 22-25)
-
 | Неделя | Задача | Результат |
 |--------|--------|-----------|
 | 22.1 | Парсер CFTC COT | Импорт отчётов |
 | 22.2 | Парсер GBTC/ETF | Grayscale API, Yahoo |
-| 23.1 | Миграция БД (proxy_type и т.д.) | Новые поля |
+| 23.1 | Миграция БД | Новые поля |
 | 23.2 | analyzeTrustPremium | Логика GBTC Index |
-| 23.3 | regime_change_date логика | Учёт ETF конвертации |
-| 23.4 | signal_direction (-1 для GBTC) | Инверсия сигнала |
-| 24.1 | Robust Normalization (Percentile Rank) | Устойчивость к выбросам |
-| 24.2 | Autocorrelation Filter (min 21 день) | Фильтрация кластеров |
-| 24.3 | Liquidity-Weighted Aggregation | GBTC + IBIT + FBTC |
-| 25.1 | Statistical Significance (p-value, CI) | Bootstrap 1000 итераций |
-| 25.2 | Тестирование 2020-2025 | Backtest GBTC proxy |
+| 23.3 | regime_change_date | Учёт ETF конвертации |
+| 23.4 | signal_direction (-1) | Инверсия сигнала |
+| 24.1 | Percentile Rank | Устойчивость к выбросам |
+| 24.2 | Autocorrelation Filter | Фильтрация кластеров |
+| 24.3 | Liquidity-Weighted | GBTC + IBIT + FBTC |
+| 25.1 | Тестирование 2020-2025 | Backtest GBTC proxy |
 
 ---
 
-### Phase 7: Risk Management (Недели 26-27) **НОВОЕ**
-
+### Phase 7: Risk Management (Недели 26-27)
 | Неделя | Задача | Результат |
 |--------|--------|-----------|
 | 26.1 | Position Sizing | Расчёт размера |
@@ -145,7 +123,6 @@
 ---
 
 ### Phase 8: Qualified Trend Break (Недели 28-29)
-
 | Неделя | Задача | Результат |
 |--------|--------|-----------|
 | 28.1 | Детекция пробоев | Трендовые линии |
@@ -155,7 +132,6 @@
 ---
 
 ### Phase 9: Integration & Workflow (Недели 30-32)
-
 | Неделя | Задача | Результат |
 |--------|--------|-----------|
 | 30.1 | Объединение всех модулей | Единый workflow |
@@ -167,42 +143,47 @@
 
 ---
 
-### Phase 10: Frontend (Недели 33-38)
-
+### Phase 10: ML, Monitoring & Compliance (Недели 33-44)
 | Неделя | Задача | Результат |
 |--------|--------|-----------|
-| 33-34 | React + TypeScript | Vite, компоненты |
-| 35-36 | Графики (Lightweight Charts) | OHLC, Projection |
-| 37 | Dashboard | Обзор, виджеты |
-| 38 | Отчёты + Backtest UI | Визуализация метрик, bootstrap CI |
+| 33.1 | Feature Engineering | Сигналы → features |
+| 33.2 | Label Generation | logging only |
+| 34.1 | XGBoost Classifier | Модель обучена |
+| 34.2 | Cross-Validation | OOS тестирование |
+| 35.1 | Monitoring Stack | Prometheus + Grafana |
+| 35.2 | Alerting Rules | 6 критических алертов |
+| 36.1 | Chaos Tests | 5 сценариев fault injection |
+| **36.2** | **Data Lineage System** | **Audit trail** |
+| **37.1** | **Audit Logging** | **Compliance** |
+| **37.2** | **Compliance Reporting** | **SEC/CFTC ready** |
+| 38-40 | Frontend (React) | Dashboard, графики |
+| 41.1 | Unit тесты | Покрытие > 80% |
+| 41.2 | Integration тесты | API тесты |
+| 42.1 | Load testing | k6, оптимизация |
+| **42.2** | **Security Audit** | **Penetration test** |
+| 43.1 | Documentation | Godoc, API docs |
+| 44.1 | Production Deployment | Kubernetes |
+| 44.2 | Final Acceptance | Sign-off |
 
 ---
 
-### Phase 11: Оптимизация и Тестирование (Недели 39-40)
-
-| Неделя | Задача | Результат |
-|--------|--------|-----------|
-| 39 | Unit тесты | Покрытие > 80% |
-| 40 | Integration тесты + Load testing | k6, Godoc, API docs |
-
----
-
-## 4. КОМАНДА И РОЛИ
+## 3. КОМАНДА И РОЛИ
 
 | Роль | Количество | Обязанности |
 |------|------------|-------------|
 | Tech Lead / Architect | 1 | Архитектура, код-ревью, Go/Python |
 | Backend Developer (Go) | 2 | API, сервисы, БД |
-| Quant Developer (Python) | 1 | QSpectrum, DTW, ML, Bootstrap |
+| Quant Developer (Python) | 1 | QSpectrum, DTW, Bootstrap |
+| ML Engineer | 1 | XGBoost, Monitoring (Phase 10) |
 | Frontend Developer | 1 | React, графики |
 | DevOps | 1 | CI/CD, инфраструктура, Vault |
 | QA | 1 | Тестирование, бэктест валидация |
 
 ---
 
-## 5. КЛЮЧЕВЫЕ МЕТРИКИ
+## 4. КЛЮЧЕВЫЕ МЕТРИКИ
 
-### 5.1 Производительность
+### 4.1 Производительность
 | Метрика | Цель |
 |---------|------|
 | API Response Time | < 100ms (p95) |
@@ -211,14 +192,14 @@
 | Composite Line | < 100ms |
 | WebSocket latency | < 10ms |
 
-### 5.2 Надёжность
+### 4.2 Надёжность
 | Метрика | Цель |
 |---------|------|
 | Uptime | 99.9% |
 | Error rate | < 0.1% |
 | Data integrity | 100% |
 
-### 5.3 Trading Quality
+### 4.3 Trading Quality
 | Метрика | Цель |
 |---------|------|
 | Backtest Sharpe | > 1.0 |
@@ -230,7 +211,7 @@
 
 ---
 
-## 6. РИСКИ И МИТИГАЦИЯ
+## 5. РИСКИ И МИТИГАЦИЯ
 
 | Риск | Вероятность | Влияние | Митигация |
 |------|-------------|---------|-----------|
@@ -238,14 +219,15 @@
 | Неточность прогнозов | Средняя | Высокое | FTE, WFA, Backtest валидация |
 | Качество данных (30-50 лет) | Средняя | Высокое | Множественные источники, валидация |
 | GBTC структурный слом (2024) | Высокая | Среднее | regime_change_date + Chow Test |
-| Производительность DTW | Средняя | Среднее | Ограничение окна, кэширование |
+| Производительность DTW | Средняя | Среднее | Гибридный алгоритм, кэширование |
 | Переобучение стратегии | Средняя | Высокое | In-Sample / Out-of-Sample разделение |
-| Bootstrap вычислительно тяжёл | Средняя | Среднее | Только Python, кэширование результатов |
+| Bootstrap вычислительно тяжёл | Средняя | Среднее | Только Python, streaming, кэширование |
 | Autocorrelation сигналов | Средняя | Среднее | min_signal_distance_days = 21 |
+| Quant Developer bottleneck | Высокая | Высокое | Найм до старта Phase 0 |
 
 ---
 
-## 7. ИТОГОВАЯ ОЦЕНКА
+## 6. ИТОГОВАЯ ОЦЕНКА
 
 | Этап | Длительность |
 |------|--------------|
@@ -259,119 +241,36 @@
 | Phase 7: Risk Management | 2 недели |
 | Phase 8: QTB | 2 недели |
 | Phase 9: Integration | 3 недели |
-| Phase 10: Frontend | 6 недель |
-| Phase 11: Тестирование | 2 недели |
-| **ИТОГО** | **40 недель (~10 месяцев)** |
+| Phase 10: ML, Monitoring, Compliance | 12 недель |
+| **ИТОГО** | **44 недели (~11 месяцев)** |
 
 ---
 
-## 8. ЧЕК-ЛИСТ ПЕРЕД СТАРТОМ (SPRINT 1)
+## 7. ЧЕК-ЛИСТ ПЕРЕД СТАРТОМ (SPRINT 1)
 
-- [ ] Python-прототип QSpectrum в Jupyter
-- [ ] Python-прототип DTW в Jupyter
-- [ ] Backtest Engine на Python/Go
-- [ ] Валидация на BTC/GBTC 2020-2025
-- [ ] Robust Normalization (Percentile Rank) тест
-- [ ] Bootstrap CI (1000 итераций) тест
-- [ ] Chow Test валидация структурного сдвига
-- [ ] Закупка/подготовка данных (30 лет TradFi, 15 лет Crypto)
-- [ ] Внесение изменений в TZ.md и TECHNICAL_SOLUTION.md
-- [ ] Команда укомплектована (Go + Python разработчики)
-- [ ] HashiCorp Vault настроен для secrets
-- [ ] CI/CD pipeline готов
+### Blocking (без этого — СТОП):
+- [ ] **Quant Developer (senior)** — контракт подписан, start date < Неделя 1
+- [ ] **Данные:** 30 лет TradFi (verified), 15 лет BTC (verified) — **no gaps > 5 days**
+- [ ] **Python-прототип:** Burg's MEM + DTW гибрид — **< 3 сек на 10 лет**
+- [ ] **Vault:** secrets injection — **tested, rotation working**
+- [ ] **Go/No-Go критерии:** **signed off by stakeholders + legal**
 
----
+### Critical (риск задержки):
+- [ ] **Circuit Breaker** — implemented, **tested with fault injection**
+- [ ] **Continuous Aggregates** — **performance benchmarked (query < 50ms)**
+- [ ] **gRPC Streaming** — **only Bootstrap, tested with 10K iterations**
 
-## 9. ФОРМУЛЫ КОМПОНЕНТОВ
-
-### 9.1 Annual Cycle
-```
-AC(day) = Σ NormalizedPrice(year, day) / N
-
-FTE (Forward Testing Efficiency):
-FTE = Correlation(Projection, Actual)
-
-Пороги:
-- TradFi: FTE > 0.0
-- Crypto: FTE > 0.08
-```
-
-### 9.2 QSpectrum (Циклическая корреляция + МЭМ)
-```
-QSpectrum ≠ FFT! Разработан для нестационарных финансовых данных.
-
-1. Циклическая корреляция:
-   CyclicCorrelation(period) = Σ P(t) × P(t-period) / (N - period)
-
-2. Энергия цикла:
-   Energy(period) = |C| × √(N/period) × WFA_Stability
-
-3. МЭМ (Burg's method):
-   P(f) = σ² / |1 + Σ aₖ × e^(-i2πfk)|²
-
-4. Walk-Forward Stability:
-   WFA = Count(C > 0) / Total
-```
-
-### 9.3 Composite Line
-```
-CL(t) = A₁sin(2πf₁t + φ₁) + A₂sin(2πf₂t + φ₂) + A₃sin(2πf₃t + φ₃)
-
-Сигналы:
-- BUY:  все 3 цикла направлены вверх
-- SELL: все 3 цикла направлены вниз
-```
-
-### 9.4 Decennial Patterns
-```
-DP(digit, day) = Average(NormalizedPrice) for years where year%10 == digit
-```
-
-### 9.5 COT/GBTC Index (НОВОЕ)
-```
-Futures (COT):
-COT_Index = (Current_Net - Min_N) / (Max_N - Min_N) × 100
-
-GBTC/ETF (Percentile Rank):
-PR(X) = Count(x_i < X) / N × 100%
-
-Signal Direction:
-- Futures: +1 (прямая)
-- GBTC: -1 (инверсия)
-
-Liquidity-Weighted Aggregation:
-Index_final = Σ(w_i × Index_i) / Σw_i
-```
-
-### 9.6 Risk Management (НОВОЕ)
-```
-Position Size = RiskAmount / StopDistance
-
-Signal Decay:
-Effective_Strength = Initial × 0.5^(Age / HalfLife)
-
-Max Drawdown Protection:
-Если CurrentDrawdown >= MaxDrawdown → Нет новых позиций
-```
-
-### 9.7 Statistical Validation (НОВОЕ)
-```
-Bootstrap CI (95%):
-1. Resample returns с заменой (1000 итераций)
-2. CI = [P_2.5, P_97.5]
-
-p-value:
-p = Count(bootstrap_mean <= 0) / iterations
-
-Chow Test (Structural Break):
-F = [(RSS_full - (RSS_1 + RSS_2)) / k] / [(RSS_1 + RSS_2) / (n - 2k)]
-```
+### High (качество):
+- [ ] **Monitoring Stack** — **deployed, dashboards reviewed**
+- [ ] **Alerting Rules** — **6 alerts, 2 critical with PagerDuty**
+- [ ] **Chaos Test Plan** — **5 сценариев включая network partition**
+- [ ] **Data Lineage Design** — **approved (Phase 10)**
 
 ---
 
-## 10. ЗАКЛЮЧИТЕЛЬНОЕ СЛОВО
+## 8. ЗАКЛЮЧИТЕЛЬНОЕ СЛОВО
 
-**CycleCast v3.0** — это production-ready система для циклического анализа рынков с учётом:
+**CycleCast v3.2 Final** — это production-ready система институционального уровня для циклического анализа рынков с учётом:
 - ✅ Традиционных активов (30-50 лет данных, COT)
 - ✅ Криптовалют (10-15 лет, GBTC/ETF proxy)
 - ✅ Backtesting Engine до продакшена
@@ -384,11 +283,15 @@ F = [(RSS_full - (RSS_1 + RSS_2)) / k] / [(RSS_1 + RSS_2) / (n - 2k)]
 - ✅ Liquidity-Weighted Aggregation
 - ✅ Signal Decay Function
 - ✅ Chow Test для структурных сдвигов
+- ✅ Data Lineage для compliance
+- ✅ Monitoring & Alerting
+- ✅ Chaos Engineering tests
+- ✅ Circuit Breaker pattern
 
 **Зелёный свет.** Приступайте к **Phase 0**.
 
 ---
 
 **Дата утверждения:** 12 марта 2026  
-**Версия документации:** 3.0  
-**Статус:** ✅ УТВЕРЖДЕНО К РАЗРАБОТКЕ
+**Версия документации:** 3.2 Final  
+**Статус:** ✅ **УТВЕРЖДЕНО К РАЗРАБОТКЕ**

@@ -1,6 +1,6 @@
 # ТЕХНИЧЕСКОЕ ЗАДАНИЕ (ТЗ)
 ## Система циклического анализа и прогнозирования финансовых рынков
-### CycleCast - Методология Ларри Вильямса v3.0
+### CycleCast v3.2 Final - Методология Ларри Вильямса
 
 ---
 
@@ -17,6 +17,7 @@ CycleCast предназначена для:
 - Валидации прогнозов через исторические аналогии и бэктестинг
 - Поддержки традиционных активов и криптовалют (BTC через GBTC/ETF proxy)
 - Управления рисками и расчёта размера позиции
+- Обеспечения compliance и audit trail для институционального использования
 
 ### 1.3 Область применения
 | Сегмент | Активы | Особенности |
@@ -25,16 +26,17 @@ CycleCast предназначена для:
 | Crypto | Биткоин, альткоины | 10-15 лет данных, GBTC/ETF proxy вместо COT |
 | Hybrid | Смешанные портфели | Агрегация сигналов, кросс-актив корреляции |
 
-### 1.4 Методология Ларри Вильямса (обновлённая)
+### 1.4 Методология Ларри Вильямса (обновлённая v3.2)
 ```
-Шаг 0: Backtesting Engine → Валидация на истории (НОВОЕ)
+Шаг 0: Backtesting Engine → Валидация на истории (ОБЯЗАТЕЛЬНО)
 Шаг 1: Сезонность (Annual Cycle) → "ЧТО торговать?"
 Шаг 2: Циклы (Composite Line) → "КОГДА входить?"
 Шаг 3: Исторические аналогии (Phenomenological) → Проверка
 Шаг 4: COT/GBTC → Подтверждение "Умными деньгами"
-Шаг 5: Risk Management → Расчёт позиции (НОВОЕ)
+Шаг 5: Risk Management → Расчёт позиции
 Шаг 6: Qualified Trend Break → Точка входа
-Шаг 7: Statistical Validation → p-value, CI (НОВОЕ)
+Шаг 7: Statistical Validation → p-value, Bootstrap CI
+Шаг 8: Data Lineage → Audit trail для compliance
 ```
 
 ---
@@ -46,17 +48,18 @@ CycleCast предназначена для:
 #### 2.1.1 Функциональные требования
 | ID | Требование | Приоритет | Примечание |
 |----|------------|-----------|------------|
-| MD-001 | Импорт исторических данных (CSV, JSON, XML) | Высокий | |
-| MD-002 | Подключение к внешним API (Yahoo, Alpha Vantage, CFTC, Grayscale) | Высокий | |
-| MD-003 | Хранение OHLCV данных | Высокий | |
-| MD-004 | Поддержка таймфреймов (1m, 5m, 1h, 1d, 1w, 1M) | Высокий | |
-| MD-005 | Автоматическое обновление по расписанию | Средний | Cron + Asynq |
-| MD-006 | Нормализация (сплиты, дивиденды, корп. действия) | Высокий | Критично для длинной истории |
-| MD-007 | Валидация и очистка (пропуски, выбросы) | Высокий | |
+| MD-001 | Импорт исторических данных (CSV, JSON, XML) | Критический | |
+| MD-002 | Подключение к внешним API (Yahoo, Alpha Vantage, CFTC, Grayscale) | Критический | |
+| MD-003 | Хранение OHLCV данных | Критический | |
+| MD-004 | Поддержка таймфреймов (1m, 5m, 1h, 1d, 1w, 1M) | Критический | |
+| MD-005 | Автоматическое обновление по расписанию | Высокий | Cron + Asynq |
+| MD-006 | Нормализация (сплиты, дивиденды, корп. действия) | Критический | |
+| MD-007 | Валидация и очистка (пропуски, выбросы) | Критический | |
 | MD-008 | Кэширование в Redis | Высокий | |
-| MD-009 | Хранение истории: 30-50 лет (TradFi), 10-15 лет (Crypto) | Высокий | **Обновлено** |
-| MD-010 | Синхронизация времени (day_close_utc) | Высокий | **Новое для BTC/GBTC** |
-| MD-011 | Поддержка нескольких источников данных | Средний | Резервирование |
+| MD-009 | Хранение истории: 30-50 лет (TradFi), 10-15 лет (Crypto) | Критический | |
+| MD-010 | Синхронизация времени (day_close_utc) | Критический | Для BTC/GBTC корреляции |
+| MD-011 | Circuit Breaker для провайдеров | Критический | Graceful degradation |
+| MD-012 | Data Freshness мониторинг | Высокий | Алерт если > 4 часа |
 
 #### 2.1.2 Структура данных
 ```go
@@ -78,7 +81,7 @@ type MarketData struct {
     DetrendedClose  float64 `json:"detrended_close,omitempty"`
     
     // Для крипто-адаптации
-    DayCloseUTC     string  `json:"day_close_utc,omitempty"` // "20:00:00"
+    DayCloseUTC     string  `json:"day_close_utc,omitempty"`
 }
 ```
 
@@ -88,7 +91,7 @@ POST   /api/v1/market/import              - Импорт данных
 GET    /api/v1/market/symbols             - Список инструментов
 GET    /api/v1/market/symbols/{id}        - Данные по инструменту
 GET    /api/v1/market/history             - Исторические данные
-GET    /api/v1/market/history/aligned     - Данные с синхронизацией времени (НОВОЕ)
+GET    /api/v1/market/history/aligned     - Данные с синхронизацией времени
 DELETE /api/v1/market/symbols/{id}        - Удаление данных
 ```
 
@@ -99,12 +102,12 @@ DELETE /api/v1/market/symbols/{id}        - Удаление данных
 #### 2.2.1 Функциональные требования
 | ID | Требование | Приоритет |
 |----|------------|-----------|
-| AC-001 | Загрузка исторических данных (30-50 лет TradFi, 10-15 Crypto) | Высокий |
-| AC-002 | Детрендинг данных (MA или линейная регрессия) | Высокий |
-| AC-003 | Расчёт среднего значения для каждого дня года | Высокий |
-| AC-004 | Нормализация годовых данных к масштабу 0-1 | Высокий |
-| AC-005 | Расчёт confidence интервалов | Средний |
-| AC-006 | FTE валидация (порог 0.0 TradFi, 0.08 Crypto) | Высокий |
+| AC-001 | Загрузка исторических данных (30-50 лет TradFi, 10-15 Crypto) | Критический |
+| AC-002 | Детрендинг данных (MA или линейная регрессия) | Критический |
+| AC-003 | Расчёт среднего значения для каждого дня года | Критический |
+| AC-004 | Нормализация годовых данных к масштабу 0-1 | Критический |
+| AC-005 | Расчёт confidence интервалов | Высокий |
+| AC-006 | FTE валидация с адаптивным порогом | Критический |
 
 #### 2.2.2 Алгоритм
 ```go
@@ -149,15 +152,15 @@ func CalculateAnnualCycle(prices []MarketData, minYears int) AnnualCycleResult {
 #### 2.3.1 Требования
 | ID | Требование | Приоритет |
 |----|------------|-----------|
-| FTE-001 | Валидация на out-of-sample данных | Высокий |
-| FTE-002 | Расчёт корреляции Пирсон | Высокий |
-| FTE-003 | Детекция "сломанных" сезонностей | Высокий |
-| FTE-004 | Walk-Forward тестирование | Высокий |
-| FTE-005 | Адаптивный порог (0.0 TradFi, 0.08 Crypto) | Высокий |
+| FTE-001 | Валидация на out-of-sample данных | Критический |
+| FTE-002 | Расчёт корреляции Пирсон | Критический |
+| FTE-003 | Детекция "сломанных" сезонностей | Критический |
+| FTE-004 | Walk-Forward тестирование | Критический |
+| FTE-005 | Адаптивный порог на realised volatility | Критический |
 
 #### 2.3.2 Алгоритм
 ```go
-func ValidateFTE(prices []MarketData, model AnnualCycle, isCrypto bool) FTEResult {
+func ValidateFTE(prices []MarketData, model AnnualCycle, config FTEConfig) FTEResult {
     // Разделение 70/30
     splitPoint := len(prices) * 0.7
     inSample := prices[:splitPoint]
@@ -169,17 +172,24 @@ func ValidateFTE(prices []MarketData, model AnnualCycle, isCrypto bool) FTEResul
     // Корреляция
     correlation := PearsonCorrelation(prediction, outSample.Close)
     
-    // Порог
-    threshold := 0.0
-    if isCrypto {
-        threshold = 0.08 // **Обновлено для крипто**
-    }
+    // Адаптивный порог
+    threshold := calculateAdaptiveThreshold(prices, config)
     
     return FTEResult{
         Correlation: correlation,
         IsValid:     correlation > threshold,
         Status:      getStatus(correlation, threshold),
     }
+}
+
+func calculateAdaptiveThreshold(prices []MarketData, config FTEConfig) float64 {
+    currentVol := calculateRealizedVol(prices, 30)
+    longTermVol := calculateRealizedVol(prices, 252)
+    
+    ratio := currentVol / longTermVol
+    threshold := config.BaseThreshold * (1 + config.SensitivityLambda * (ratio - 1))
+    
+    return math.Max(threshold, config.BaseThreshold * 0.5)
 }
 ```
 
@@ -190,12 +200,12 @@ func ValidateFTE(prices []MarketData, model AnnualCycle, isCrypto bool) FTEResul
 #### 2.4.1 Требования
 | ID | Требование | Приоритет | Примечание |
 |----|------------|-----------|------------|
-| QS-001 | Циклическая корреляция (не FFT!) | Высокий | Go или Python |
-| QS-002 | Вычисление энергии цикла | Высокий | |
-| QS-003 | МЭМ (Burg's method) | Высокий | **Только Python** |
-| QS-004 | Выбор 3 доминантных циклов | Высокий | |
-| QS-005 | Walk-Forward Analysis | Высокий | |
-| QS-006 | gRPC интеграция с Go | Высокий | **Новое** |
+| QS-001 | Циклическая корреляция (не FFT!) | Критический | Go или Python |
+| QS-002 | Вычисление энергии цикла | Критический | |
+| QS-003 | МЭМ (Burg's method) | Критический | **Только Python** |
+| QS-004 | Выбор 3 доминантных циклов | Критический | |
+| QS-005 | Walk-Forward Analysis | Критический | |
+| QS-006 | gRPC интеграция с Go | Критический | Unary call |
 
 #### 2.4.2 Архитектура
 ```
@@ -232,10 +242,10 @@ func ValidateFTE(prices []MarketData, model AnnualCycle, isCrypto bool) FTEResul
 #### 2.5.1 Требования
 | ID | Требование | Приоритет |
 |----|------------|-----------|
-| CL-001 | Наложение 3 волн (short/medium/long) | Высокий |
-| CL-002 | Детекция точек резонанса | Высокий |
-| CL-003 | Генерация сигналов BUY/SELL | Высокий |
-| CL-004 | Прогноз на N дней вперёд | Высокий |
+| CL-001 | Наложение 3 волн (short/medium/long) | Критический |
+| CL-002 | Детекция точек резонанса | Критический |
+| CL-003 | Генерация сигналов BUY/SELL | Критический |
+| CL-004 | Прогноз на N дней вперёд | Критический |
 
 #### 2.5.2 Формула
 ```
@@ -253,10 +263,11 @@ CL(t) = A₁sin(2πf₁t + φ₁) + A₂sin(2πf₂t + φ₂) + A₃sin(2πf₃t
 #### 2.6.1 Требования
 | ID | Требование | Приоритет |
 |----|------------|-----------|
-| DP-001 | Группировка по yearDigit (0-9) | Высокий |
-| DP-002 | Нормализация 0-1 | Высокий |
-| DP-003 | Расчёт усреднённого паттерна | Высокий |
-| DP-004 | Корреляция с текущим годом | Высокий |
+| DP-001 | Группировка по yearDigit (0-9) | Критический |
+| DP-002 | Нормализация 0-1 | Критический |
+| DP-003 | Расчёт усреднённого паттерна | Критический |
+| DP-004 | Корреляция с текущим годом | Критический |
+| DP-005 | Отключение для crypto (< 30 лет) | Высокий |
 
 #### 2.6.2 Формула
 ```
@@ -270,25 +281,29 @@ DP(digit, day) = Average(NormalizedPrice) for years where year%10 == digit
 #### 2.7.1 Требования
 | ID | Требование | Приоритет |
 |----|------------|-----------|
-| PM-001 | DTW (Dynamic Time Warping) | Высокий |
-| PM-002 | Фильтр по Decennial (yearDigit) | Высокий |
-| PM-003 | Training Interval | Высокий |
-| PM-004 | Best Matches Ranking | Высокий |
-| PM-005 | Проекция продолжения | Высокий |
+| PM-001 | DTW (Dynamic Time Warping) | Критический |
+| PM-002 | Фильтр по Decennial (yearDigit) | Критический |
+| PM-003 | Training Interval | Критический |
+| PM-004 | Best Matches Ranking | Критический |
+| PM-005 | Проекция продолжения | Критический |
+| PM-006 | Гибридная оптимизация (filter + exact) | Критический |
 
-#### 2.7.2 Алгоритм DTW
+#### 2.7.2 Алгоритм DTW (гибридный)
 ```python
-def DTWDistance(pattern1, pattern2):
-    n, m = len(pattern1), len(pattern2)
-    dtw = np.full((n+1, m+1), np.inf)
-    dtw[0, 0] = 0
+def adaptive_dtw(target, history, config):
+    # 1. Грубая фильтрация: корреляция > 0.6 (O(N))
+    candidates = fast_correlation_filter(target, history, threshold=0.6)
     
-    for i in range(1, n+1):
-        for j in range(1, m+1):
-            cost = abs(pattern1[i-1] - pattern2[j-1])
-            dtw[i, j] = cost + min(dtw[i-1, j], dtw[i, j-1], dtw[i-1, j-1])
+    # 2. Ограничение топ-100
+    if len(candidates) > 100:
+        candidates = candidates[:100]
     
-    return dtw[n, m]
+    # 3. Параллельный exact DTW
+    results = Parallel(n_jobs=-1)(
+        delayed(exact_dtw)(target, h) for h in candidates
+    )
+    
+    return sorted(results, key=lambda x: x.distance)
 ```
 
 ---
@@ -298,15 +313,15 @@ def DTWDistance(pattern1, pattern2):
 #### 2.8.1 Требования
 | ID | Требование | Приоритет | Примечание |
 |----|------------|-----------|------------|
-| COT-001 | Импорт отчётов CFTC COT | Высокий | TradFi |
-| COT-002 | Парсинг GBTC/ETF данных | Высокий | **Crypto** |
-| COT-003 | Анализ Commercials / Premium | Высокий | |
-| COT-004 | Расчёт COT/GBTC Index (0-100) | Высокий | |
-| COT-005 | Детекция экстремумов (>80, <20) | Высокий | |
-| COT-006 | Поддержка signal_direction (-1 для GBTC) | Высокий | **Новое** |
-| COT-007 | Учёт regime_change_date (2024-01-11) | Высокий | **Новое** |
-| COT-008 | Robust нормализация (Percentile Rank) | Высокий | **Новое** |
-| COT-009 | Autocorrelation Filter (min 21 день) | Высокий | **Новое** |
+| COT-001 | Импорт отчётов CFTC COT | Критический | TradFi |
+| COT-002 | Парсинг GBTC/ETF данных | Критический | **Crypto** |
+| COT-003 | Анализ Commercials / Premium | Критический | |
+| COT-004 | Расчёт COT/GBTC Index (0-100) | Критический | |
+| COT-005 | Детекция экстремумов (>80, <20) | Критический | |
+| COT-006 | Поддержка signal_direction (-1 для GBTC) | Критический | **Новое** |
+| COT-007 | Учёт regime_change_date (2024-01-11) | Критический | **Новое** |
+| COT-008 | Robust нормализация (Percentile Rank) | Критический | **Новое** |
+| COT-009 | Autocorrelation Filter (min 21 день) | Критический | **Новое** |
 | COT-010 | Liquidity-Weighted Aggregation | Высокий | **Новое** |
 
 #### 2.8.2 Структура данных
@@ -329,12 +344,6 @@ type COTData struct {
     CommercialIndex float64   `json:"commercial_index"`
     NetPosition     int64     `json:"net_position"`
     
-    // Статистическая значимость (НОВОЕ)
-    PValue          float64   `json:"p_value"`
-    CILower         float64   `json:"ci_lower"`
-    CIUpper         float64   `json:"ci_upper"`
-    NObservations   int       `json:"n_observations"`
-    
     // Сигналы
     IsExtreme       bool      `json:"is_extreme"`
     SignalType      string    `json:"signal_type,omitempty"`
@@ -355,17 +364,17 @@ PR(X) = Count(x_i < X) / N × 100%
 
 ---
 
-### 2.9 Модуль Risk Management (НОВОЕ)
+### 2.9 Модуль Risk Management
 
 #### 2.9.1 Требования
 | ID | Требование | Приоритет |
 |----|------------|-----------|
-| RM-001 | Расчёт размера позиции (Position Sizing) | Высокий |
-| RM-002 | Stop-Loss расчёт | Высокий |
-| RM-003 | Take-Profit расчёт | Высокий |
-| RM-004 | Max Drawdown лимит | Высокий |
-| RM-005 | Kelly Criterion / Fixed Fractional | Средний |
-| RM-006 | Signal Decay Function | Высокий |
+| RM-001 | Расчёт размера позиции (Position Sizing) | Критический |
+| RM-002 | Stop-Loss расчёт | Критический |
+| RM-003 | Take-Profit расчёт | Критический |
+| RM-004 | Max Drawdown лимит | Критический |
+| RM-005 | Kelly Criterion / Fixed Fractional | Высокий |
+| RM-006 | Signal Decay Function | Критический |
 
 #### 2.9.2 Алгоритм
 ```go
@@ -399,7 +408,7 @@ func CalculatePosition(signal Signal, account Balance, risk RiskConfig) Position
 
 ---
 
-### 2.10 Модуль Backtesting Engine (НОВОЕ, Phase 0)
+### 2.10 Модуль Backtesting Engine
 
 #### 2.10.1 Требования
 | ID | Требование | Приоритет |
@@ -407,10 +416,10 @@ func CalculatePosition(signal Signal, account Balance, risk RiskConfig) Position
 | BT-001 | Симуляция торговли на истории | Критический |
 | BT-002 | Учёт комиссий и проскальзывания | Критический |
 | BT-003 | In-Sample / Out-of-Sample разделение | Критический |
-| BT-004 | Генерация Equity Curve | Высокий |
-| BT-005 | Метрики (Sharpe, MaxDD, WinRate) | Высокий |
-| BT-006 | Walk-Forward оптимизация | Высокий |
-| BT-007 | Bootstrap для доверительных интервалов | Высокий |
+| BT-004 | Генерация Equity Curve | Критический |
+| BT-005 | Метрики (Sharpe, MaxDD, WinRate) | Критический |
+| BT-006 | Walk-Forward оптимизация | Критический |
+| BT-007 | Bootstrap для доверительных интервалов | Критический |
 
 #### 2.10.2 Метрики
 ```
@@ -436,9 +445,9 @@ func CalculatePosition(signal Signal, account Balance, risk RiskConfig) Position
 #### 2.11.1 Требования
 | ID | Требование | Приоритет |
 |----|------------|-----------|
-| QTB-001 | Детекция пробоев трендовых линий | Высокий |
-| QTB-002 | Фильтрация через Composite Line | Высокий |
-| QTB-003 | Генерация сигналов Confirm / False | Высокий |
+| QTB-001 | Детекция пробоев трендовых линий | Критический |
+| QTB-002 | Фильтрация через Composite Line | Критический |
+| QTB-003 | Генерация сигналов Confirm / False | Критический |
 
 #### 2.11.2 Логика
 ```
@@ -453,9 +462,35 @@ QTB = False если:
 
 ---
 
-### 2.12 Модуль интеграции (Workflow)
+### 2.12 Модуль Data Lineage & Audit
 
-#### 2.12.1 Итоговый алгоритм
+#### 2.12.1 Требования
+| ID | Требование | Приоритет |
+|----|------------|-----------|
+| DL-001 | Traceability каждого сигнала | Критический |
+| DL-002 | Версия кода (git commit) | Критический |
+| DL-003 | Исходные данные (hash) | Критический |
+| DL-004 | Параметры моделей | Критический |
+| DL-005 | Audit logging | Критический |
+
+#### 2.12.2 Структура
+```go
+type DataLineage struct {
+    SignalID        uuid.UUID           `json:"signal_id"`
+    SourceData      []DataSource        `json:"source_data"`
+    Transformations []Transform         `json:"transformations"`
+    Parameters      map[string]float64  `json:"parameters"`
+    CodeVersion     string              `json:"code_version"`
+    Timestamp       time.Time           `json:"timestamp"`
+    Checksum        string              `json:"checksum"`
+}
+```
+
+---
+
+### 2.13 Модуль интеграции (Workflow)
+
+#### 2.13.1 Итоговый алгоритм
 ```go
 func WilliamsWorkflow(config WorkflowConfig) WorkflowResult {
     // Шаг 0: Backtest (только для новых стратегий)
@@ -498,7 +533,12 @@ func WilliamsWorkflow(config WorkflowConfig) WorkflowResult {
         activeAssets[i].Stats = CalculateStatistics(...)
     }
     
-    // Шаг 8: Сигналы
+    // Шаг 8: Data Lineage
+    for i := range activeAssets {
+        SaveLineage(activeAssets[i])
+    }
+    
+    // Шаг 9: Сигналы
     signals := generateSignals(activeAssets)
     
     return WorkflowResult{
@@ -518,6 +558,7 @@ func WilliamsWorkflow(config WorkflowConfig) WorkflowResult {
 - **Charts:** OHLC + Composite Line + Projection
 - **Analysis Panel:** Параметры алгоритмов, результаты
 - **Backtest Report:** Equity curve, метрики, bootstrap CI
+- **Audit Trail:** Data lineage viewer
 
 ### 3.2 API
 - REST API (OpenAPI 3.0)
@@ -537,6 +578,7 @@ func WilliamsWorkflow(config WorkflowConfig) WorkflowResult {
 | SEC-005 | Шифрование API-ключей (HashiCorp Vault) |
 | SEC-006 | Аудит логов |
 | SEC-007 | Резервное копирование БД |
+| SEC-008 | Data Lineage для compliance |
 
 ---
 
@@ -578,6 +620,7 @@ func WilliamsWorkflow(config WorkflowConfig) WorkflowResult {
 | AT-006 | COT/GBTC | Корректный индекс |
 | AT-007 | Risk Management | Позиция рассчитана |
 | AT-008 | Statistical Validation | p-value < 0.05 |
+| AT-009 | Data Lineage | Полная traceability |
 
 ### 7.2 Нагрузочные тесты
 | ID | Тест | Критерий |
@@ -586,15 +629,24 @@ func WilliamsWorkflow(config WorkflowConfig) WorkflowResult {
 | LT-002 | 1000 WebSocket | Latency < 20ms |
 | LT-003 | 24h continuous | Uptime > 99.9% |
 
+### 7.3 Chaos Engineering тесты
+| ID | Тест | Критерий |
+|----|------|----------|
+| CT-001 | Python service failure | Go degrades gracefully |
+| CT-002 | Redis failure | Fallback to PostgreSQL |
+| CT-003 | API load spike | Rate limiting activates |
+| CT-004 | Database latency | Circuit breaker opens |
+| CT-005 | Network partition | gRPC retry logic works |
+
 ---
 
 ## 8. ИТОГОВЫЙ АЛГОРИТМ ЛАРРИ ВИЛЬЯМСА ДЛЯ БИТКОИНА
 
 ```
-1. Annual Cycle (BTC, 15 лет) с FTE-валидацией по порогу 0.08.
-2. Decennial Patterns (BTC, текущий year digit).
+1. Annual Cycle (BTC, 15 лет) с FTE-валидацией по адаптивному порогу.
+2. Decennial Patterns (BTC, текущий year digit) — опционально.
 3. Composite Line (BTC) через QSpectrum.
-4. Phenomenological Model (BTC).
+4. Phenomenological Model (BTC) с гибридным DTW.
 5. COT (GBTC + другие прокси):
    - Загрузить данные GBTC (цена, NAV)
    - Рассчитать премию
@@ -604,5 +656,13 @@ func WilliamsWorkflow(config WorkflowConfig) WorkflowResult {
    - Применить фильтр автокорреляции (min_signal_distance)
    - При наличии нескольких прокси – взвешенное усреднение
 6. Qualified Trend Break (BTC)
-7. Итоговый сигнал: совпадение направлений Composite Line, COT-сигнала (с учётом направления), Phenom и QTB.
+7. Risk Management (позиция, stop-loss, take-profit)
+8. Statistical Validation (p-value, Bootstrap CI)
+9. Data Lineage (audit trail)
+10. Итоговый сигнал: совпадение направлений Composite Line, COT-сигнала, Phenom и QTB.
 ```
+
+---
+
+**Версия документации:** 3.2 Final  
+**Статус:** ✅ УТВЕРЖДЕНО К РАЗРАБОТКЕ

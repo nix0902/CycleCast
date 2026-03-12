@@ -1,7 +1,11 @@
-# CycleCast v3.0
+# CycleCast v3.2 Final
 
 ## Система циклического анализа и прогнозирования финансовых рынков
 ### Методология Ларри Вильямса
+
+---
+
+> 🤖 **Для ИИ агентов:** См. [CLAUDE.md](./CLAUDE.md) — quick reference карта проекта для быстрой навигации.
 
 ---
 
@@ -17,7 +21,7 @@
 
 ## 📋 Описание
 
-**CycleCast v3.0** — это production-ready система для моделирования и прогнозирования поведения финансовых рынков, основанная на **методологии Ларри Вильямса**:
+**CycleCast v3.2 Final** — это production-ready система институционального уровня для моделирования и прогнозирования поведения финансовых рынков, основанная на **методологии Ларри Вильямса**:
 
 ### Поддерживаемые рынки
 
@@ -29,31 +33,33 @@
 
 ### Основные возможности
 
-- **Annual Cycle / Seasonality** — Сезонный анализ с FTE валидацией
+- **Annual Cycle / Seasonality** — Сезонный анализ с адаптивным FTE порогом
 - **QSpectrum** — Циклическая корреляция + МЭМ (НЕ FFT!)
 - **Composite Line** — Композитная линия прогноза (3 цикла, резонанс)
 - **Decennial Patterns** — Десятилетние паттерны (годы 0-9)
-- **Phenomenological Model** — Исторические аналогии (DTW)
-- **COT/GBTC Analysis** — Анализ "умных денег" (Commercials, Premium)
+- **Phenomenological Model** — Исторические аналогии (DTW гибридный)
+- **COT/GBTC Analysis** — Анализ "умных денег" (Percentile Rank, Autocorrelation Filter)
 - **Risk Management** — Position Sizing, Stop-Loss, Signal Decay
-- **Backtesting Engine** — Симуляция на истории, Bootstrap CI
-- **Statistical Validation** — p-value, доверительные интервалы
+- **Backtesting Engine** — Симуляция на истории, Bootstrap CI (streaming)
+- **Statistical Validation** — p-value, доверительные интервалы, Chow Test
+- **Data Lineage** — Audit trail для compliance (SEC/CFTC ready)
 
 ---
 
 ## 🎯 Методология Ларри Вильямса
 
-### Пошаговый алгоритм
+### Пошаговый алгоритм (v3.2)
 
 ```
-Шаг 0: Backtesting Engine → Валидация на истории (НОВОЕ)
+Шаг 0: Backtesting Engine → Валидация на истории (ОБЯЗАТЕЛЬНО)
 Шаг 1: Сезонность (Annual Cycle) → "ЧТО торговать?"
 Шаг 2: Циклы (Composite Line) → "КОГДА входить?"
 Шаг 3: Исторические аналогии (Phenomenological) → Проверка
 Шаг 4: COT/GBTC → Подтверждение "Умными деньгами"
-Шаг 5: Risk Management → Расчёт позиции (НОВОЕ)
+Шаг 5: Risk Management → Расчёт позиции
 Шаг 6: Qualified Trend Break → Точка входа
-Шаг 7: Statistical Validation → p-value, CI (НОВОЕ)
+Шаг 7: Statistical Validation → p-value, Bootstrap CI
+Шаг 8: Data Lineage → Audit trail для compliance
 ```
 
 ### Ключевой принцип
@@ -69,16 +75,17 @@
 | Компонент | Назначение | Технология |
 |-----------|------------|------------|
 | **Annual Cycle** | Сезонные тренды | Go, 30-50 лет OHLC |
-| **FTE** | Валидация сезонности | Адаптивный порог (0.08 Crypto) |
+| **FTE** | Валидация сезонности | Адаптивный порог (realised volatility) |
 | **QSpectrum** | Циклическая корреляция | **Python**, Burg's MEM |
 | **Composite Line** | Прогнозная линия | 3 цикла, резонанс BUY/SELL |
-| **Phenomenological** | Исторические аналогии | **Python**, DTW |
+| **Phenomenological** | Исторические аналогии | **Python**, DTW гибридный |
 | **U-Turn** | Разворотные точки | Go |
 | **COT/GBTC** | Позиции хеджеров / Premium | Percentile Rank, Autocorrelation Filter |
 | **Risk Management** | Позиция, Stop-Loss | Signal Decay |
-| **Backtesting** | Валидация стратегии | Bootstrap CI (1000 итераций) |
+| **Backtesting** | Валидация стратегии | Bootstrap CI (streaming) |
+| **Data Lineage** | Audit trail | Compliance-ready |
 
-### 📊 GBTC/ETF Proxy для криптовалют (НОВОЕ)
+### 📊 GBTC/ETF Proxy для криптовалют
 
 ```
 Для биткоина вместо COT используется GBTC Premium:
@@ -118,6 +125,7 @@
 │    - COT/GBTC       │           │   - Bootstrap CI    │
 │    - Risk           │           │   - Chow Test       │
 │    - Backtest       │           │                     │
+│    - Lineage        │           │                     │
 └─────────────────────┘           └─────────────────────┘
            │
            ▼
@@ -138,9 +146,10 @@
 | **Frontend** | React 18 + TypeScript + Vite |
 | **Database** | PostgreSQL 16 + TimescaleDB |
 | **Cache** | Redis 7 |
-| **API** | REST (Gin) + gRPC |
+| **API** | REST (Gin) + gRPC (streaming) |
 | **Secrets** | HashiCorp Vault |
 | **Charts** | Lightweight Charts |
+| **Monitoring** | Prometheus + Grafana |
 | **Containerization** | Docker + Docker Compose |
 
 ---
@@ -196,6 +205,16 @@ make run-api
    WFA_Stability = Count(Correlation > 0) / Total_Periods
 ```
 
+### FTE Адаптивный порог
+
+```
+threshold = base × (1 + λ × (current_vol / long_term_vol - 1))
+
+где:
+- base = 0.05 (TradFi) или 0.08 (Crypto)
+- λ = 0.5 (sensitivity parameter)
+```
+
 ### GBTC Index (Percentile Rank)
 
 ```
@@ -213,13 +232,15 @@ Effective_Strength = Initial × 0.5^(AgeDays / HalfLifeDays)
 HalfLifeDays = 14 (по умолчанию)
 ```
 
-### Bootstrap CI (95%)
+### Bootstrap CI (95%, streaming)
 
 ```
 Для n итераций (обычно 1000):
 1. Resample returns с заменой
 2. Рассчитать метрику
 3. CI = [P_2.5, P_97.5]
+
+Streaming через gRPC для прогресса.
 ```
 
 ---
@@ -239,6 +260,7 @@ HalfLifeDays = 14 (по умолчанию)
 | `POST` | `/api/v1/backtest/run` | Запуск бэктеста |
 | `POST` | `/api/v1/risk/calculate` | Расчёт позиции |
 | `POST` | `/api/v1/workflow/williams` | Полный workflow |
+| `GET` | `/api/v1/lineage/{signal_id}` | Data Lineage |
 
 ### gRPC (Python Quant)
 
@@ -246,7 +268,7 @@ HalfLifeDays = 14 (по умолчанию)
 service QuantService {
     rpc QSpectrum(QSpectrumRequest) returns (QSpectrumResponse);
     rpc PhenomSearch(PhenomRequest) returns (PhenomResponse);
-    rpc Bootstrap(BootstrapRequest) returns (BootstrapResponse);
+    rpc Bootstrap(BootstrapRequest) returns (stream BootstrapProgress);
     rpc ChowTest(ChowTestRequest) returns (ChowTestResponse);
 }
 ```
@@ -283,6 +305,24 @@ service QuantService {
 }
 ```
 
+### Data Lineage
+
+```json
+{
+  "signal_id": "uuid",
+  "source_data": [
+    {"type": "market_data", "id": "uuid", "hash": "sha256..."},
+    {"type": "cot_data", "id": "uuid", "hash": "sha256..."}
+  ],
+  "transformations": [
+    {"name": "annual_cycle", "version": "v1.2.3", "input_hash": "...", "output_hash": "..."}
+  ],
+  "code_version": "abc123def",
+  "timestamp": "2026-03-12T10:00:00Z",
+  "checksum": "sha256..."
+}
+```
+
 ---
 
 ## 📁 Структура проекта
@@ -297,14 +337,15 @@ cyclecast/
 │   │   ├── seasonality/   # Annual Cycle, FTE
 │   │   ├── cot/           # COT + GBTC адаптация
 │   │   ├── risk/          # Risk Management
-│   │   └── backtest/      # Backtesting Engine
+│   │   ├── backtest/      # Backtesting Engine
+│   │   └── lineage/       # Data Lineage
 │   └── transport/         # API handlers
 ├── quant/                  # Python Quant (Math/ML)
 │   ├── qspectrum/         # Burg's MEM
-│   ├── phenom/            # DTW
-│   └── bootstrap/         # Bootstrap CI
+│   ├── phenom/            # DTW гибридный
+│   └── bootstrap/         # Bootstrap CI (streaming)
 ├── docs/                   # Документация
-│   ├── PLAN.md            # План разработки
+│   ├── PLAN.md            # План разработки (44 недели)
 │   ├── TZ.md              # Техническое задание
 │   └── TECHNICAL_SOLUTION.md
 └── web/                    # Frontend
@@ -323,6 +364,9 @@ make backtest-validate
 
 # Load testing
 k6 run tests/load/api_load.js
+
+# Chaos Engineering
+make chaos-test
 ```
 
 ---
@@ -334,9 +378,34 @@ k6 run tests/load/api_load.js
 ```
 
 Каждая стратегия должна пройти:
-- In-Sample / Out-of-Sample разделение
+- In-Sample / Out-of-Sample разделение (70/30)
 - Bootstrap CI > 0 (95% confidence)
 - p-value < 0.05
+- Chow Test для структурных сдвигов
+
+---
+
+## 🔒 Compliance
+
+### Data Lineage
+- Полная traceability каждого сигнала
+- Версия кода (git commit)
+- Исходные данные (hash)
+- Параметры моделей
+
+### Audit Logging
+- Все действия пользователей логируются
+- Изменения конфигурации трекаются
+- Доступ к API-ключам аудитится
+
+### Chaos Engineering
+| ID | Сценарий | Критерий |
+|----|----------|----------|
+| CT-001 | Python service failure | Go degrades gracefully |
+| CT-002 | Redis failure | Fallback to PostgreSQL |
+| CT-003 | API load spike | Rate limiting activates |
+| CT-004 | Database latency | Circuit breaker opens |
+| CT-005 | Network partition | gRPC retry logic works |
 
 ---
 
@@ -359,5 +428,5 @@ MIT License. См. [LICENSE](LICENSE) для деталей.
 ---
 
 <p align="center">
-  <b>CycleCast v3.0</b> — Циклический анализ по методологии Ларри Вильямса
+  <b>CycleCast v3.2 Final</b> — Циклический анализ по методологии Ларри Вильямса
 </p>
