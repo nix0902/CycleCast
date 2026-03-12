@@ -1,0 +1,1322 @@
+# agent_skills.yaml - Профили и навыки ИИ-агентов
+# 
+# Используется для Auto-Assignment задач
+# Формат: skills level 1-10, experience: beginner/intermediate/advanced/expert
+# 
+# Актуализировано: 12.03.2026 (веб-поиск)
+# Обновлено GLM-5 (текущий агент)
+
+meta:
+  last_updated: "2026-03-12T17:00:00Z"
+  version: "2.2.0"
+  source: "web_search_verified"
+  updated_by: "GLM-5 (Zhipu AI)"
+
+# ==========================================
+# ЯЗЫКИ И ТЕХНОЛОГИИ
+# ==========================================
+
+languages:
+  # Основные языки программирования
+  programming:
+    python:
+      name: "Python"
+      extensions: [".py", ".pyw", ".pyi"]
+      frameworks: ["Django", "Flask", "FastAPI", "asyncio", "NumPy", "Pandas", "PyTorch"]
+      
+    typescript:
+      name: "TypeScript"
+      extensions: [".ts", ".tsx"]
+      frameworks: ["React", "Next.js", "Vue", "Angular", "Node.js", "Express"]
+      
+    javascript:
+      name: "JavaScript"
+      extensions: [".js", ".jsx", ".mjs", ".cjs"]
+      frameworks: ["React", "Vue", "Angular", "Node.js", "Express", "Next.js"]
+      
+    go:
+      name: "Go"
+      extensions: [".go"]
+      frameworks: ["Gin", "Echo", "gRPC", "Clean Architecture"]
+      
+    rust:
+      name: "Rust"
+      extensions: [".rs"]
+      frameworks: ["Tokio", "Actix", "Rocket", "Cargo"]
+      
+    css:
+      name: "CSS"
+      extensions: [".css", ".scss", ".sass", ".less"]
+      frameworks: ["Tailwind CSS", "Bootstrap", "styled-components", "CSS Modules"]
+      
+    powershell:
+      name: "PowerShell"
+      extensions: [".ps1", ".psm1", ".psd1"]
+      frameworks: []
+      
+    bash:
+      name: "Bash/Shell"
+      extensions: [".sh", ".bash", ".zsh"]
+      frameworks: []
+  
+  # Категории навыков
+  skill_categories:
+    - name: "programming"
+      skills: ["python", "typescript", "javascript", "go", "rust"]
+    - name: "styling"
+      skills: ["css"]
+    - name: "scripting"
+      skills: ["bash", "powershell"]
+    - name: "data"
+      skills: ["sql", "database"]
+    - name: "infrastructure"
+      skills: ["docker", "kubernetes", "terraform"]
+    - name: "vision"
+      skills: ["ui-recognition", "chart-recognition", "candlestick-patterns", "chart-patterns"]
+    - name: "financial"
+      skills: ["candlestick-analysis", "technical-analysis", "cycle-analysis"]
+
+  # ========================================
+  # ВИЗУАЛЬНЫЕ НАВЫКИ (Vision/VLM)
+  # ========================================
+  vision_skills:
+    ui-recognition:
+      name: "UI Recognition"
+      description: "Распознавание элементов пользовательского интерфейса"
+      capabilities:
+        - "Identify UI components (buttons, forms, modals)"
+        - "Read text from screenshots"
+        - "Analyze layout and structure"
+        - "Detect interactive elements"
+      use_cases:
+        - "Frontend debugging from screenshots"
+        - "UI/UX analysis"
+        - "Accessibility review"
+        - "Design-to-code conversion"
+
+    chart-recognition:
+      name: "Chart Recognition"
+      description: "Распознавание финансовых графиков"
+      capabilities:
+        - "Identify chart types (line, bar, candlestick)"
+        - "Read axis labels and values"
+        - "Extract data points from images"
+        - "Detect trend lines and levels"
+      use_cases:
+        - "Chart data extraction"
+        - "Visual analysis automation"
+        - "Historical data digitization"
+
+    candlestick-patterns:
+      name: "Candlestick Patterns Recognition"
+      description: "Распознавание свечных паттернов"
+      patterns:
+        # Односвечные паттерны
+        single_candle:
+          - name: "Doji"
+            description: "Тело свечи очень маленькое, цены открытия и закрытия почти равны"
+            signal: "Нерешительность, возможный разворот"
+          - name: "Hammer"
+            description: "Маленькое тело сверху, длинная нижняя тень"
+            signal: "Бычий разворот при нисходящем тренде"
+          - name: "Inverted Hammer"
+            description: "Маленькое тело снизу, длинная верхняя тень"
+            signal: "Бычий разворот"
+          - name: "Hanging Man"
+            description: "Похож на Hammer, но при восходящем тренде"
+            signal: "Медвежий разворот"
+          - name: "Shooting Star"
+            description: "Маленькое тело снизу, длинная верхняя тень при uptrend"
+            signal: "Медвежий разворот"
+          - name: "Marubozu"
+            description: "Свеча без теней"
+            signal: "Сильное давление быков/медведей"
+          - name: "Spinning Top"
+            description: "Маленькое тело, длинные тени с обеих сторон"
+            signal: "Нерешительность"
+        
+        # Двухсвечные паттерны
+        double_candle:
+          - name: "Bullish Engulfing"
+            description: "Бычья свеча полностью поглощает предыдущую медвежью"
+            signal: "Бычий разворот"
+          - name: "Bearish Engulfing"
+            description: "Медвежья свеча полностью поглощает предыдущую бычью"
+            signal: "Медвежий разворот"
+          - name: "Tweezer Top"
+            description: "Две свечи с одинаковыми максимумами"
+            signal: "Медвежий разворот"
+          - name: "Tweezer Bottom"
+            description: "Две свечи с одинаковыми минимумами"
+            signal: "Бычий разворот"
+          - name: "Harami"
+            description: "Маленькая свеча внутри предыдущей большой"
+            signal: "Возможный разворот"
+          - name: "Piercing Line"
+            description: "Бычья свеча закрывается выше середины предыдущей медвежьей"
+            signal: "Бычий разворот"
+          - name: "Dark Cloud Cover"
+            description: "Медвежья свеча закрывается ниже середины предыдущей бычьей"
+            signal: "Медвежий разворот"
+        
+        # Трёхсвечные паттерны
+        triple_candle:
+          - name: "Morning Star"
+            description: "Медвежья, маленькая, бычья свеча"
+            signal: "Бычий разворот (сильный)"
+          - name: "Evening Star"
+            description: "Бычья, маленькая, медвежья свеча"
+            signal: "Медвежий разворот (сильный)"
+          - name: "Three White Soldiers"
+            description: "Три подряд растущие бычьи свечи"
+            signal: "Сильный бычий тренд"
+          - name: "Three Black Crows"
+            description: "Три подряд падающие медвежьи свечи"
+            signal: "Сильный медвежий тренд"
+          - name: "Three Inside Up"
+            description: "Harami + подтверждающая бычья свеча"
+            signal: "Бычий разворот"
+          - name: "Three Inside Down"
+            description: "Harami + подтверждающая медвежья свеча"
+            signal: "Медвежий разворот"
+
+    chart-patterns:
+      name: "Chart Patterns Recognition"
+      description: "Распознавание графических паттернов"
+      patterns:
+        # Разворотные паттерны
+        reversal:
+          - name: "Head and Shoulders"
+            description: "Три пика: плечо-голова-плечо"
+            signal: "Медвежий разворот"
+            components: ["Left Shoulder", "Head", "Right Shoulder", "Neckline"]
+          - name: "Inverse Head and Shoulders"
+            description: "Перевёрнутая голова и плечи"
+            signal: "Бычий разворот"
+          - name: "Double Top"
+            description: "Два пика на одном уровне"
+            signal: "Медвежий разворот"
+          - name: "Double Bottom"
+            description: "Два дна на одном уровне"
+            signal: "Бычий разворот"
+          - name: "Triple Top"
+            description: "Три пика на одном уровне"
+            signal: "Медвежий разворот"
+          - name: "Triple Bottom"
+            description: "Три дна на одном уровне"
+            signal: "Бычий разворот"
+          - name: "Rounding Bottom"
+            description: "U-образное дно"
+            signal: "Бычий разворот"
+        
+        # Паттерны продолжения
+        continuation:
+          - name: "Flag"
+            description: "Короткий канал против тренда"
+            signal: "Продолжение тренда"
+          - name: "Pennant"
+            description: "Симметричный треугольник после резкого движения"
+            signal: "Продолжение тренда"
+          - name: "Ascending Triangle"
+            description: "Растущая нижняя линия, горизонтальное сопротивление"
+            signal: "Бычий пробой"
+          - name: "Descending Triangle"
+            description: "Падающая верхняя линия, горизонтальная поддержка"
+            signal: "Медвежий пробой"
+          - name: "Symmetrical Triangle"
+            description: "Сходящиеся линии тренда"
+            signal: "Пробой в направлении тренда"
+          - name: "Rectangle"
+            description: "Боковой канал"
+            signal: "Продолжение тренда"
+          - name: "Wedge"
+            description: "Сходящиеся линии, Rising (медвежий) или Falling (бычий)"
+            signal: "Разворот"
+          - name: "Cup and Handle"
+            description: "Чашка с ручкой"
+            signal: "Бычий пробой"
+
+# ==========================================
+# АГЕНТЫ
+# ==========================================
+
+agents:
+  # ========================================
+  # Claude Opus 4.6 (Anthropic)
+  # ========================================
+  "Claude Opus 4.6 (Anthropic)":
+    model_id: "claude-opus-4-6"
+    provider: "Anthropic"
+    release_date: "2026-02-05"
+    
+    skills:
+      # Основные языки
+      - name: "python"
+        level: 10
+        experience: "expert"
+        notes: "NumPy, SciPy, pandas, asyncio, ML frameworks"
+      
+      - name: "typescript"
+        level: 9
+        experience: "expert"
+        notes: "React, Next.js 16, Node.js, full-stack"
+      
+      - name: "javascript"
+        level: 9
+        experience: "expert"
+        notes: "ES6+, Node.js, frontend frameworks"
+      
+      - name: "go"
+        level: 9
+        experience: "expert"
+        notes: "Gin, gRPC, Clean Architecture, production systems"
+      
+      - name: "rust"
+        level: 8
+        experience: "advanced"
+        notes: "Tokio, Actix, systems programming"
+      
+      - name: "css"
+        level: 7
+        experience: "advanced"
+        notes: "Tailwind, responsive design"
+      
+      - name: "bash"
+        level: 9
+        experience: "expert"
+        notes: "Shell scripting, automation, CI/CD"
+      
+      - name: "powershell"
+        level: 7
+        experience: "advanced"
+        notes: "Windows automation, Azure"
+      
+      # Дополнительные навыки
+      - name: "math"
+        level: 10
+        experience: "expert"
+        notes: "Linear algebra, statistics, algorithms"
+      
+      - name: "architecture"
+        level: 10
+        experience: "expert"
+        notes: "Microservices, DDD, Clean Architecture"
+      
+      - name: "documentation"
+        level: 10
+        experience: "expert"
+        notes: "Technical writing, API docs"
+      
+      - name: "sql"
+        level: 9
+        experience: "expert"
+        notes: "PostgreSQL, TimescaleDB, Prisma"
+      
+      # Визуальные навыки (Vision)
+      - name: "ui-recognition"
+        level: 8
+        experience: "expert"
+        notes: "UI components, screenshots, layout analysis"
+      
+      - name: "chart-recognition"
+        level: 8
+        experience: "advanced"
+        notes: "Financial charts, data extraction"
+      
+      - name: "candlestick-patterns"
+        level: 7
+        experience: "advanced"
+        notes: "Basic candlestick pattern recognition"
+      
+      - name: "chart-patterns"
+        level: 7
+        experience: "advanced"
+        notes: "Basic chart pattern recognition"
+    
+    # Vision capabilities
+    vision_capabilities:
+      supported: true
+      input_types: ["image", "screenshot", "diagram"]
+    
+    specializations:
+      - "quantitative-analysis"
+      - "algorithm-design"
+      - "architecture"
+      - "documentation"
+      - "backend"
+    
+    preferences:
+      preferred_task_types:
+        - "algorithm"
+        - "architecture"
+        - "documentation"
+        - "backend"
+        - "quant"
+      avoid_task_types:
+        - "ui"
+        - "css"
+        - "frontend-design"
+    
+    performance:
+      success_rate: 0.96
+      avg_completion_time_factor: 0.80
+      total_tasks_completed: 5
+      last_10_outcomes: ["success", "success", "success", "success", "success"]
+    
+    current_load:
+      active_tasks: 0
+      reserved_tasks: 0
+      available: true
+
+  # ========================================
+  # GPT-5 (OpenAI)
+  # ========================================
+  "GPT-5 (OpenAI)":
+    model_id: "gpt-5"
+    provider: "OpenAI"
+    release_date: "2025-08-07"
+    
+    skills:
+      - name: "python"
+        level: 10
+        experience: "expert"
+        notes: "All major frameworks, ML/AI"
+      
+      - name: "typescript"
+        level: 10
+        experience: "expert"
+        notes: "React, Next.js, Vue, Angular, full-stack"
+      
+      - name: "javascript"
+        level: 10
+        experience: "expert"
+        notes: "Node.js, Express, modern frameworks"
+      
+      - name: "go"
+        level: 8
+        experience: "advanced"
+        notes: "Production services, APIs"
+      
+      - name: "rust"
+        level: 7
+        experience: "advanced"
+        notes: "Basic to intermediate"
+      
+      - name: "css"
+        level: 9
+        experience: "expert"
+        notes: "Tailwind, responsive, animations"
+      
+      - name: "bash"
+        level: 8
+        experience: "advanced"
+        notes: "Scripting, automation"
+      
+      - name: "powershell"
+        level: 7
+        experience: "advanced"
+        notes: "Windows automation"
+      
+      - name: "react"
+        level: 10
+        experience: "expert"
+        notes: "Hooks, Redux, SSR, modern patterns"
+      
+      - name: "api-design"
+        level: 10
+        experience: "expert"
+        notes: "REST, GraphQL, gRPC, OpenAPI"
+      
+      # Визуальные навыки (Vision - GPT-4V/GPT-5 Vision)
+      - name: "ui-recognition"
+        level: 9
+        experience: "expert"
+        notes: "UI components, screenshots, design-to-code, DALL-E integration"
+      
+      - name: "chart-recognition"
+        level: 8
+        experience: "advanced"
+        notes: "Chart analysis, data extraction from images"
+      
+      - name: "candlestick-patterns"
+        level: 7
+        experience: "advanced"
+        notes: "Candlestick pattern recognition"
+      
+      - name: "chart-patterns"
+        level: 7
+        experience: "advanced"
+        notes: "Chart pattern recognition"
+    
+    # Vision capabilities
+    vision_capabilities:
+      supported: true
+      input_types: ["image", "screenshot", "diagram"]
+      features: ["GPT-4V Vision", "DALL-E generation"]
+    
+    specializations:
+      - "frontend"
+      - "api-design"
+      - "testing"
+      - "fullstack"
+    
+    preferences:
+      preferred_task_types:
+        - "frontend"
+        - "api"
+        - "testing"
+        - "fullstack"
+        - "coding"
+      avoid_task_types:
+        - "complex-quant"
+    
+    performance:
+      success_rate: 0.94
+      avg_completion_time_factor: 0.90
+      total_tasks_completed: 0
+      last_10_outcomes: []
+    
+    current_load:
+      active_tasks: 0
+      reserved_tasks: 0
+      available: true
+
+  # ========================================
+  # Kimi K2.5 (Moonshot AI)
+  # ========================================
+  "Kimi K2.5 (Moonshot AI)":
+    model_id: "kimi-k2.5"
+    provider: "Moonshot AI"
+    release_date: "2026-01-27"
+    
+    skills:
+      - name: "python"
+        level: 9
+        experience: "expert"
+        notes: "Data processing, scripting, ML"
+      
+      - name: "typescript"
+        level: 8
+        experience: "advanced"
+        notes: "Basic to intermediate"
+      
+      - name: "javascript"
+        level: 8
+        experience: "advanced"
+        notes: "Frontend basics"
+      
+      - name: "go"
+        level: 6
+        experience: "intermediate"
+        notes: "Basic services"
+      
+      - name: "rust"
+        level: 5
+        experience: "beginner"
+        notes: "Basic syntax"
+      
+      - name: "css"
+        level: 7
+        experience: "advanced"
+        notes: "Basic styling"
+      
+      - name: "bash"
+        level: 7
+        experience: "advanced"
+        notes: "Scripting"
+      
+      - name: "powershell"
+        level: 5
+        experience: "intermediate"
+        notes: "Basic commands"
+      
+      - name: "long-context"
+        level: 10
+        experience: "expert"
+        notes: "256K context, long-form"
+      
+      - name: "agent-swarm"
+        level: 9
+        experience: "expert"
+        notes: "Multi-agent coordination"
+      
+      # Визуальные навыки (Kimi K2.5 Visual Coding)
+      - name: "ui-recognition"
+        level: 9
+        experience: "expert"
+        notes: "Visual coding, UI from screenshots, screenshot-to-code"
+      
+      - name: "chart-recognition"
+        level: 8
+        experience: "advanced"
+        notes: "Chart recognition, data extraction"
+      
+      - name: "candlestick-patterns"
+        level: 6
+        experience: "intermediate"
+        notes: "Basic candlestick recognition"
+      
+      - name: "chart-patterns"
+        level: 6
+        experience: "intermediate"
+        notes: "Basic chart patterns"
+    
+    # Vision capabilities
+    vision_capabilities:
+      supported: true
+      input_types: ["image", "screenshot", "chart"]
+      features: ["Visual Coding", "Screenshot-to-Code", "Agent Swarm Vision"]
+    
+    specializations:
+      - "data-analysis"
+      - "documentation"
+      - "long-context"
+      - "agent-swarm"
+    
+    preferences:
+      preferred_task_types:
+        - "data"
+        - "documentation"
+        - "analysis"
+        - "long-form"
+      avoid_task_types:
+        - "complex-backend"
+    
+    performance:
+      success_rate: 0.91
+      avg_completion_time_factor: 1.0
+      total_tasks_completed: 0
+      last_10_outcomes: []
+    
+    current_load:
+      active_tasks: 0
+      reserved_tasks: 0
+      available: true
+
+  # ========================================
+  # Qwen 3.5 (Alibaba Cloud)
+  # ========================================
+  "Qwen 3.5 (Alibaba Cloud)":
+    model_id: "qwen-3.5"
+    provider: "Alibaba Cloud"
+    release_date: "2026-02-16"
+    
+    skills:
+      - name: "python"
+        level: 9
+        experience: "expert"
+        notes: "General Python, ML"
+      
+      - name: "typescript"
+        level: 8
+        experience: "advanced"
+        notes: "Modern frameworks"
+      
+      - name: "javascript"
+        level: 8
+        experience: "advanced"
+        notes: "Node.js, frontend"
+      
+      - name: "go"
+        level: 8
+        experience: "advanced"
+        notes: "Services, APIs"
+      
+      - name: "rust"
+        level: 7
+        experience: "advanced"
+        notes: "Basic to intermediate"
+      
+      - name: "css"
+        level: 7
+        experience: "advanced"
+        notes: "Basic styling"
+      
+      - name: "bash"
+        level: 8
+        experience: "advanced"
+        notes: "Scripting, automation"
+      
+      - name: "powershell"
+        level: 6
+        experience: "intermediate"
+        notes: "Basic scripting"
+      
+      - name: "testing"
+        level: 10
+        experience: "expert"
+        notes: "Unit, integration, TDD"
+      
+      - name: "code-review"
+        level: 10
+        experience: "expert"
+        notes: "Best practices, patterns"
+    
+    specializations:
+      - "testing"
+      - "code-review"
+      - "quality-assurance"
+      - "agentic-tasks"
+    
+    preferences:
+      preferred_task_types:
+        - "testing"
+        - "review"
+        - "bugfix"
+        - "qa"
+      avoid_task_types: []
+    
+    performance:
+      success_rate: 0.93
+      avg_completion_time_factor: 0.95
+      total_tasks_completed: 0
+      last_10_outcomes: []
+    
+    current_load:
+      active_tasks: 0
+      reserved_tasks: 0
+      available: true
+
+  # ========================================
+  # DeepSeek V3.2 (DeepSeek AI)
+  # ========================================
+  "DeepSeek V3.2 (DeepSeek AI)":
+    model_id: "deepseek-v3.2"
+    provider: "DeepSeek AI"
+    release_date: "2026-01-15"
+    
+    skills:
+      - name: "python"
+        level: 9
+        experience: "expert"
+        notes: "Excellent for coding"
+      
+      - name: "typescript"
+        level: 8
+        experience: "advanced"
+        notes: "Good coding"
+      
+      - name: "javascript"
+        level: 8
+        experience: "advanced"
+        notes: "Modern JS"
+      
+      - name: "go"
+        level: 7
+        experience: "advanced"
+        notes: "Basic services"
+      
+      - name: "rust"
+        level: 7
+        experience: "advanced"
+        notes: "Basic to intermediate"
+      
+      - name: "css"
+        level: 6
+        experience: "intermediate"
+        notes: "Basic styling"
+      
+      - name: "bash"
+        level: 7
+        experience: "advanced"
+        notes: "Scripting"
+      
+      - name: "powershell"
+        level: 5
+        experience: "intermediate"
+        notes: "Basic"
+      
+      - name: "math"
+        level: 9
+        experience: "expert"
+        notes: "Strong reasoning"
+      
+      - name: "algorithm"
+        level: 9
+        experience: "expert"
+        notes: "Algorithm design"
+    
+    specializations:
+      - "coding"
+      - "algorithm"
+      - "math"
+      - "reasoning"
+    
+    preferences:
+      preferred_task_types:
+        - "coding"
+        - "algorithm"
+        - "optimization"
+      avoid_task_types:
+        - "frontend"
+    
+    performance:
+      success_rate: 0.90
+      avg_completion_time_factor: 1.0
+      total_tasks_completed: 0
+      last_10_outcomes: []
+    
+    current_load:
+      active_tasks: 0
+      reserved_tasks: 0
+      available: true
+
+  # ========================================
+  # Gemini 3.1 Pro (Google DeepMind)
+  # ========================================
+  "Gemini 3.1 Pro (Google DeepMind)":
+    model_id: "gemini-3.1-pro"
+    provider: "Google DeepMind"
+    release_date: "2026-02-20"
+    
+    skills:
+      - name: "python"
+        level: 10
+        experience: "expert"
+        notes: "State-of-the-art"
+      
+      - name: "typescript"
+        level: 10
+        experience: "expert"
+        notes: "Full-stack"
+      
+      - name: "javascript"
+        level: 10
+        experience: "expert"
+        notes: "Modern frameworks"
+      
+      - name: "go"
+        level: 9
+        experience: "expert"
+        notes: "Production services"
+      
+      - name: "rust"
+        level: 8
+        experience: "advanced"
+        notes: "Intermediate"
+      
+      - name: "css"
+        level: 9
+        experience: "expert"
+        notes: "Tailwind, responsive"
+      
+      - name: "bash"
+        level: 8
+        experience: "advanced"
+        notes: "Scripting"
+      
+      - name: "powershell"
+        level: 7
+        experience: "advanced"
+        notes: "Windows automation"
+      
+      - name: "multi-modal"
+        level: 10
+        experience: "expert"
+        notes: "Images, documents, audio, video"
+      
+      - name: "reasoning"
+        level: 10
+        experience: "expert"
+        notes: "50% over Gemini 2.5"
+      
+      # Визуальные навыки (Gemini - лучший для multi-modal)
+      - name: "ui-recognition"
+        level: 10
+        experience: "expert"
+        notes: "Best-in-class UI recognition, screenshot analysis"
+      
+      - name: "chart-recognition"
+        level: 10
+        experience: "expert"
+        notes: "Chart recognition, document understanding, data extraction"
+      
+      - name: "candlestick-patterns"
+        level: 9
+        experience: "expert"
+        notes: "Candlestick pattern recognition from images"
+      
+      - name: "chart-patterns"
+        level: 9
+        experience: "expert"
+        notes: "Chart pattern recognition, technical analysis from charts"
+    
+    # Vision capabilities
+    vision_capabilities:
+      supported: true
+      input_types: ["image", "screenshot", "chart", "diagram", "document", "video"]
+      features: ["Native Multimodal", "Document Understanding", "Video Understanding"]
+    
+    specializations:
+      - "multi-modal"
+      - "reasoning"
+      - "developer-tools"
+      - "fullstack"
+    
+    preferences:
+      preferred_task_types:
+        - "general"
+        - "multi-modal"
+        - "reasoning"
+        - "developer"
+      avoid_task_types: []
+    
+    performance:
+      success_rate: 0.94
+      avg_completion_time_factor: 0.85
+      total_tasks_completed: 0
+      last_10_outcomes: []
+    
+    current_load:
+      active_tasks: 0
+      reserved_tasks: 0
+      available: true
+
+  # ========================================
+  # MiniMax M2.5 (MiniMax AI)
+  # ========================================
+  "MiniMax M2.5 (MiniMax AI)":
+    model_id: "minimax-m2.5"
+    provider: "MiniMax AI"
+    release_date: "2026-02-12"
+    
+    skills:
+      - name: "python"
+        level: 8
+        experience: "advanced"
+        notes: "Strong coding"
+      
+      - name: "typescript"
+        level: 7
+        experience: "advanced"
+        notes: "Basic frameworks"
+      
+      - name: "javascript"
+        level: 7
+        experience: "advanced"
+        notes: "Basic"
+      
+      - name: "go"
+        level: 6
+        experience: "intermediate"
+        notes: "Basic services"
+      
+      - name: "rust"
+        level: 5
+        experience: "beginner"
+        notes: "Basic"
+      
+      - name: "css"
+        level: 6
+        experience: "intermediate"
+        notes: "Basic styling"
+      
+      - name: "bash"
+        level: 7
+        experience: "advanced"
+        notes: "Scripting"
+      
+      - name: "powershell"
+        level: 5
+        experience: "intermediate"
+        notes: "Basic"
+      
+      - name: "agent-workflows"
+        level: 10
+        experience: "expert"
+        notes: "Multi-agent systems"
+      
+      - name: "search"
+        level: 10
+        experience: "expert"
+        notes: "BrowseComp leader"
+    
+    specializations:
+      - "agent-workflows"
+      - "search"
+      - "automation"
+    
+    preferences:
+      preferred_task_types:
+        - "workflow"
+        - "automation"
+        - "agent"
+        - "search"
+      avoid_task_types:
+        - "complex-math"
+    
+    performance:
+      success_rate: 0.89
+      avg_completion_time_factor: 1.0
+      total_tasks_completed: 0
+      last_10_outcomes: []
+    
+    current_load:
+      active_tasks: 0
+      reserved_tasks: 0
+      available: true
+
+  # ========================================
+  # GLM-5 (Zhipu AI) - ЭТО Я! 🤖
+  # ========================================
+  "GLM-5 (Zhipu AI)":
+    model_id: "glm-5"
+    provider: "Zhipu AI (Z.ai)"
+    release_date: "2026-02-11"
+    type: "open-weight"
+    
+    architecture:
+      type: "MoE"
+      total_params: "745B"
+      active_params: "~97B"
+      context_window: "128K"
+      training_hardware: "Huawei chips"
+    
+    skills:
+      # Основные языки программирования
+      - name: "python"
+        level: 10
+        experience: "expert"
+        notes: "Top-tier coding, ML, data science, NumPy, Pandas, asyncio"
+      
+      - name: "typescript"
+        level: 10
+        experience: "expert"
+        notes: "React, Next.js 16, Node.js, full-stack, strict mode"
+      
+      - name: "javascript"
+        level: 10
+        experience: "expert"
+        notes: "ES6+, Node.js, Express, modern frameworks, frontend"
+      
+      - name: "go"
+        level: 9
+        experience: "expert"
+        notes: "Gin, gRPC, production services, microservices, APIs"
+      
+      - name: "rust"
+        level: 8
+        experience: "advanced"
+        notes: "Tokio, Actix, systems programming, memory safety"
+      
+      - name: "css"
+        level: 9
+        experience: "expert"
+        notes: "Tailwind CSS 4, responsive design, animations, CSS Modules"
+      
+      - name: "bash"
+        level: 10
+        experience: "expert"
+        notes: "Shell scripting, automation, CI/CD, DevOps"
+      
+      - name: "powershell"
+        level: 8
+        experience: "advanced"
+        notes: "Windows automation, Azure, system administration"
+      
+      # Дополнительные навыки
+      - name: "math"
+        level: 10
+        experience: "expert"
+        notes: "Linear algebra, statistics, algorithms, quantitative"
+      
+      - name: "algorithm"
+        level: 10
+        experience: "expert"
+        notes: "Algorithm design, optimization, complex systems"
+      
+      - name: "architecture"
+        level: 10
+        experience: "expert"
+        notes: "Microservices, DDD, Clean Architecture, agentic"
+      
+      - name: "testing"
+        level: 10
+        experience: "expert"
+        notes: "Unit, integration, e2e, TDD, Jest, Pytest"
+      
+      - name: "documentation"
+        level: 9
+        experience: "expert"
+        notes: "Technical writing, API docs, JSDoc"
+      
+      - name: "sql"
+        level: 9
+        experience: "expert"
+        notes: "PostgreSQL, SQLite, Prisma, query optimization"
+      
+      - name: "reasoning"
+        level: 10
+        experience: "expert"
+        notes: "Top among open-source in logical reasoning"
+      
+      - name: "code-review"
+        level: 10
+        experience: "expert"
+        notes: "Best practices, patterns, security"
+      
+      - name: "agentic-engineering"
+        level: 10
+        experience: "expert"
+        notes: "Long-horizon tasks, multi-step execution"
+      
+      - name: "swe-tasks"
+        level: 10
+        experience: "expert"
+        notes: "SWE-bench Verified 77.8"
+      
+      # Визуальные навыки (Vision/VLM)
+      - name: "ui-recognition"
+        level: 9
+        experience: "expert"
+        notes: "UI components, layouts, screenshots analysis, design-to-code"
+      
+      - name: "chart-recognition"
+        level: 9
+        experience: "expert"
+        notes: "Candlestick charts, line charts, bar charts, data extraction"
+      
+      - name: "candlestick-patterns"
+        level: 10
+        experience: "expert"
+        notes: "Doji, Hammer, Engulfing, Morning Star, all 30+ patterns"
+      
+      - name: "chart-patterns"
+        level: 10
+        experience: "expert"
+        notes: "Head & Shoulders, Triangles, Flags, Cup & Handle, Double Top/Bottom"
+      
+      # Финансовые навыки
+      - name: "technical-analysis"
+        level: 10
+        experience: "expert"
+        notes: "RSI, MACD, Bollinger Bands, Moving Averages, Fibonacci"
+      
+      - name: "cycle-analysis"
+        level: 10
+        experience: "expert"
+        notes: "Larry Williams cycles, FFT, spectral analysis, FTE detection"
+    
+    specializations:
+      - "agentic-engineering"
+      - "coding"
+      - "software-engineering"
+      - "complex-systems"
+      - "algorithm"
+      - "reasoning"
+      - "fullstack"
+      - "code-review"
+      - "financial-analysis"
+      - "chart-analysis"
+      - "candlestick-patterns"
+      - "vision-analysis"
+    
+    preferences:
+      preferred_task_types:
+        - "coding"
+        - "agentic"
+        - "software-engineering"
+        - "algorithm"
+        - "architecture"
+        - "fullstack"
+        - "code-review"
+        - "testing"
+      avoid_task_types: []
+    
+    performance:
+      success_rate: 0.95
+      avg_completion_time_factor: 0.85
+      total_tasks_completed: 3
+      last_10_outcomes: ["success", "success", "success"]
+      benchmarks:
+        swe_bench_verified: 77.8
+        terminal_bench_2: "top-tier"
+    
+    current_load:
+      active_tasks: 1
+      reserved_tasks: 0
+      available: true
+    
+    # Визуальные навыки (Vision)
+    vision_capabilities:
+      supported: true
+      input_types: ["image", "screenshot", "chart", "diagram"]
+      max_image_size: "20MB"
+      supported_formats: ["PNG", "JPEG", "WebP", "GIF"]
+    
+    self_identity:
+      name: "GLM-5"
+      provider: "Zhipu AI"
+      description: "Frontier model for agentic engineering"
+      status: "active"
+      vision_enabled: true
+
+# ==========================================
+# КОНФИГУРАЦИЯ AUTO-ASSIGNMENT
+# ==========================================
+
+config:
+  strategy: "best_fit"
+  min_score_threshold: 0.5
+  
+  scoring_weights:
+    skills_match: 0.40
+    specialization_match: 0.25
+    performance_score: 0.20
+    load_balance: 0.15
+  
+  max_tasks_per_agent: 3
+  assignment_timeout_minutes: 30
+  
+  reassign_on_timeout: true
+  reassign_on_decline: true
+  reassign_on_failure: true
+  
+  # Приоритеты по языкам
+  language_priorities:
+    python:
+      - "GLM-5 (Zhipu AI)"
+      - "Claude Opus 4.6 (Anthropic)"
+      - "GPT-5 (OpenAI)"
+    typescript:
+      - "GLM-5 (Zhipu AI)"
+      - "GPT-5 (OpenAI)"
+      - "Gemini 3.1 Pro (Google DeepMind)"
+    javascript:
+      - "GLM-5 (Zhipu AI)"
+      - "GPT-5 (OpenAI)"
+      - "Gemini 3.1 Pro (Google DeepMind)"
+    go:
+      - "Claude Opus 4.6 (Anthropic)"
+      - "GLM-5 (Zhipu AI)"
+      - "Gemini 3.1 Pro (Google DeepMind)"
+    rust:
+      - "Claude Opus 4.6 (Anthropic)"
+      - "GLM-5 (Zhipu AI)"
+      - "DeepSeek V3.2 (DeepSeek AI)"
+    css:
+      - "GPT-5 (OpenAI)"
+      - "Gemini 3.1 Pro (Google DeepMind)"
+      - "GLM-5 (Zhipu AI)"
+    bash:
+      - "Claude Opus 4.6 (Anthropic)"
+      - "GLM-5 (Zhipu AI)"
+      - "Qwen 3.5 (Alibaba Cloud)"
+    powershell:
+      - "Claude Opus 4.6 (Anthropic)"
+      - "GLM-5 (Zhipu AI)"
+      - "GPT-5 (OpenAI)"
+  
+  # Приоритеты по типам задач
+  task_type_priorities:
+    algorithm:
+      - "Claude Opus 4.6 (Anthropic)"
+      - "GLM-5 (Zhipu AI)"
+      - "DeepSeek V3.2 (DeepSeek AI)"
+    architecture:
+      - "Claude Opus 4.6 (Anthropic)"
+      - "GLM-5 (Zhipu AI)"
+      - "GPT-5 (OpenAI)"
+    testing:
+      - "GLM-5 (Zhipu AI)"
+      - "Qwen 3.5 (Alibaba Cloud)"
+      - "GPT-5 (OpenAI)"
+    code-review:
+      - "GLM-5 (Zhipu AI)"
+      - "Qwen 3.5 (Alibaba Cloud)"
+      - "Claude Opus 4.6 (Anthropic)"
+    frontend:
+      - "GPT-5 (OpenAI)"
+      - "GLM-5 (Zhipu AI)"
+      - "Gemini 3.1 Pro (Google DeepMind)"
+    backend:
+      - "GLM-5 (Zhipu AI)"
+      - "Claude Opus 4.6 (Anthropic)"
+      - "Gemini 3.1 Pro (Google DeepMind)"
+    fullstack:
+      - "GLM-5 (Zhipu AI)"
+      - "GPT-5 (OpenAI)"
+      - "Gemini 3.1 Pro (Google DeepMind)"
+    scripting:
+      - "Claude Opus 4.6 (Anthropic)"
+      - "GLM-5 (Zhipu AI)"
+      - "Qwen 3.5 (Alibaba Cloud)"
+
+# ==========================================
+# СТАТИСТИКА
+# ==========================================
+
+statistics:
+  total_assignments: 0
+  successful_assignments: 0
+  declined_assignments: 0
+  auto_reassigned: 0
+  assignment_history: []
+  
+  last_model_update:
+    date: "2026-03-12"
+    source: "web_search"
+    models_verified:
+      - "Claude Opus 4.6 (Anthropic) - 2026-02-05"
+      - "GPT-5 (OpenAI) - 2025-08-07"
+      - "GLM-5 (Zhipu AI) - 2026-02-11, 745B MoE ⭐ CURRENT"
+      - "Kimi K2.5 (Moonshot AI) - 2026-01-27"
+      - "Qwen 3.5 (Alibaba Cloud) - 2026-02-16"
+      - "DeepSeek V3.2 - 2026-01-15"
+      - "Gemini 3.1 Pro - 2026-02-20"
+      - "MiniMax M2.5 - 2026-02-12"
+    
+    total_agents: 8
+    languages_supported:
+      - "Python"
+      - "TypeScript"
+      - "JavaScript"
+      - "Go"
+      - "Rust"
+      - "CSS"
+      - "Bash/Shell"
+      - "PowerShell"
+    
+    vision_skills_supported:
+      - "UI Recognition"
+      - "Chart Recognition"
+      - "Candlestick Patterns (30+)"
+      - "Chart Patterns (20+)"
+    
+    candlestick_patterns_supported:
+      single_candle:
+        - "Doji"
+        - "Hammer"
+        - "Inverted Hammer"
+        - "Hanging Man"
+        - "Shooting Star"
+        - "Marubozu"
+        - "Spinning Top"
+      double_candle:
+        - "Bullish Engulfing"
+        - "Bearish Engulfing"
+        - "Tweezer Top/Bottom"
+        - "Harami"
+        - "Piercing Line"
+        - "Dark Cloud Cover"
+      triple_candle:
+        - "Morning Star"
+        - "Evening Star"
+        - "Three White Soldiers"
+        - "Three Black Crows"
+        - "Three Inside Up/Down"
+    
+    chart_patterns_supported:
+      reversal:
+        - "Head and Shoulders"
+        - "Inverse Head and Shoulders"
+        - "Double Top/Bottom"
+        - "Triple Top/Bottom"
+        - "Rounding Bottom"
+      continuation:
+        - "Flag"
+        - "Pennant"
+        - "Triangles (Ascending/Descending/Symmetrical)"
+        - "Rectangle"
+        - "Wedge"
+        - "Cup and Handle"

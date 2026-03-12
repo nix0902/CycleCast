@@ -1,0 +1,131 @@
+# progress.yaml - Состояние проекта
+#
+# Машиночитаемый формат прогресса
+
+meta:
+  created: "2026-03-12T18:00:00Z"
+  version: "1.0.0"
+  project: "CycleCast"
+  last_updated: "2026-03-12T18:00:00Z"
+
+# ==========================================
+# ТЕКУЩЕЕ СОСТОЯНИЕ
+# ==========================================
+
+current_state:
+  phase: "phase-0"
+  phase_name: "Backtesting & Math Prototyping"
+  sprint: "Sprint 1"
+  
+  progress_percentage: 5
+  health: "green"
+  status: "initialized"
+
+# ==========================================
+# ФАЗЫ ПРОЕКТА
+# ==========================================
+
+phases:
+  - id: "phase-0"
+    name: "Backtesting & Math Prototyping"
+    duration_weeks: 4
+    status: "in_progress"
+    progress: 5
+    start_date: "2026-03-12"
+    end_date: null
+    
+    milestones:
+      - id: "M0-1"
+        name: "FFT Cycle Detection"
+        status: "pending"
+      - id: "M0-2"
+        name: "Pattern Recognition"
+        status: "pending"
+      - id: "M0-3"
+        name: "Bootstrap Confidence"
+        status: "pending"
+  
+  - id: "phase-1"
+    name: "Core API Development"
+    duration_weeks: 8
+    status: "pending"
+    progress: 0
+  
+  - id: "phase-2"
+    name: "Real-time Processing"
+    duration_weeks: 6
+    status: "pending"
+    progress: 0
+  
+  - id: "phase-3"
+    name: "Web Dashboard"
+    duration_weeks: 8
+    status: "pending"
+    progress: 0
+  
+  - id: "phase-4"
+    name: "Production & Monitoring"
+    duration_weeks: 6
+    status: "pending"
+    progress: 0
+
+# ==========================================
+# МЕТРИКИ
+# ==========================================
+
+metrics:
+  tasks:
+    total: 0
+    completed: 0
+    in_progress: 0
+    pending: 0
+    blocked: 0
+  
+  quality:
+    code_coverage: 0
+    quality_gate_pass_rate: 0
+    code_review_approval_rate: 0
+    avg_task_score: 0
+  
+  performance:
+    avg_task_completion_hours: 0
+    on_time_delivery_rate: 0
+    agent_utilization_rate: 0
+  
+  vision:
+    candlestick_accuracy: 0
+    chart_pattern_accuracy: 0
+    ui_recognition_accuracy: 0
+
+# ==========================================
+# РИСКИ
+# ==========================================
+
+risks: []
+
+# ==========================================
+# НЕДАВНИЕ СОБЫТИЯ
+# ==========================================
+
+recent_events:
+  - timestamp: "2026-03-12T18:00:00Z"
+    type: "project_initialized"
+    description: "Project initialized with agent system"
+    agent: "GLM-5 (Zhipu AI)"
+
+# ==========================================
+# АГЕНТЫ
+# ==========================================
+
+agents:
+  active: []
+  # - agent: "GLM-5 (Zhipu AI)"
+  #   session_id: "SESSION-001"
+  #   task_id: "TASK-001"
+  #   started_at: "2026-03-12T18:00:00Z"
+  
+  performance:
+    "GLM-5 (Zhipu AI)":
+      tasks_completed: 1
+      success_rate: 1.0
+      avg_score: 95

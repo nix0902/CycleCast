@@ -1,0 +1,47 @@
+# session.yaml - Активные сессии и блокировки
+#
+# Управляется через: python scripts/session_manager.py
+
+meta:
+  created: "2026-03-12T18:00:00Z"
+  version: "1.0.0"
+
+config:
+  session_timeout_minutes: 120
+  heartbeat_interval_minutes: 30
+  max_sessions_per_agent: 3
+  auto_cleanup: true
+
+# Активные сессии
+sessions: []
+  # Пример структуры:
+  # - id: "SESSION-001"
+  #   agent: "GLM-5 (Zhipu AI)"
+  #   model_id: "glm-5"
+  #   task_id: "TASK-001"
+  #   status: "active"
+  #   created_at: "2026-03-12T18:00:00Z"
+  #   last_heartbeat: "2026-03-12T18:30:00Z"
+  #   checkpoint_id: "RP-PRE-001"
+  #   progress:
+  #     phase: "implementation"
+  #     percentage: 45
+
+# Блокировки задач
+locks: []
+  # Пример:
+  # - task_id: "TASK-001"
+  #   session_id: "SESSION-001"
+  #   locked_at: "2026-03-12T18:00:00Z"
+  #   locked_by: "GLM-5 (Zhipu AI)"
+
+# История сессий
+history: []
+
+# Статистика
+statistics:
+  total_sessions: 0
+  active_sessions: 0
+  completed_sessions: 0
+  timed_out_sessions: 0
+  avg_session_duration_minutes: 0
