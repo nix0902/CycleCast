@@ -1,0 +1,167 @@
+# tasks.yaml - Машино-читаемая очередь задач
+# Версия: 1.0.0
+# Формат: YAML для парсинга ИИ-агентами
+
+meta:
+  project: CycleCast
+  version: "3.2 Final"
+  created: 2026-03-12
+  last_updated: 2026-03-12T14:00:00Z
+
+# Текущая фаза
+current_phase: 0
+current_sprint: 1
+
+# Определение фаз (из PLAN.md)
+phases:
+  0:
+    name: "Backtesting & Math Prototyping"
+    weeks: [1, 2, 3, 4]
+    status: in_progress
+  1:
+    name: "Market Data & Infrastructure"
+    weeks: [5, 6, 7, 8]
+    status: pending
+    depends_on: [0]
+  2:
+    name: "Seasonality Module"
+    weeks: [9, 10, 11, 12]
+    status: pending
+    depends_on: [1]
+
+# Очередь задач
+tasks:
+  # Phase 0: Python Quant Prototypes
+  - id: QS-001
+    title: "QSpectrum Python Prototype"
+    description: |
+      Создать Python прототип QSpectrum с алгоритмом Burg's MEM.
+      Валидировать на тестовых данных S&P 500.
+    phase: 0
+    priority: critical
+    status: pending
+    assignee: null
+    depends_on: []
+    estimated_hours: 8
+    actual_hours: null
+    definition_of_done:
+      - "Файл quant/qspectrum/core.py создан"
+      - "Функция cyclic_correlation() реализована"
+      - "Функция burg_mem() реализована"
+      - "Unit тесты проходят"
+      - "Валидация на S&P 500 данных"
+    links:
+      tz: "docs/TZ.md#3.2-qspectrum"
+      plan: "docs/PLAN.md#phase-0"
+      tech: "docs/TECHNICAL_SOLUTION.md#4.1-qspectrum"
+    created: 2026-03-12
+    started: null
+    completed: null
+
+  - id: QS-002
+    title: "Bootstrap CI Streaming Implementation"
+    description: |
+      Реализовать Bootstrap CI с streaming через gRPC.
+      1000 итераций, 95% доверительный интервал.
+    phase: 0
+    priority: high
+    status: pending
+    assignee: null
+    depends_on: [QS-001]
+    estimated_hours: 6
+    actual_hours: null
+    definition_of_done:
+      - "quant/bootstrap/core.py создан"
+      - "gRPC streaming реализован"
+      - "Интеграция с QSpectrum"
+      - "Тесты проходят"
+    links:
+      tz: "docs/TZ.md#3.5-bootstrap"
+      plan: "docs/PLAN.md#phase-0"
+    created: 2026-03-12
+    started: null
+    completed: null
+
+  - id: PH-001
+    title: "Phenomenological DTW Prototype"
+    description: |
+      Реализовать DTW гибридный алгоритм для поиска исторических аналогий.
+      FastDTW для фильтрации + точный DTW для топ-10.
+    phase: 0
+    priority: high
+    status: pending
+    assignee: null
+    depends_on: []
+    estimated_hours: 8
+    actual_hours: null
+    definition_of_done:
+      - "quant/phenom/dtw.py создан"
+      - "FastDTW интеграция"
+      - "Decennial filter"
+      - "Тесты проходят"
+    links:
+      tz: "docs/TZ.md#3.3-phenom"
+      plan: "docs/PLAN.md#phase-0"
+    created: 2026-03-12
+    started: null
+    completed: null
+
+  - id: TEST-001
+    title: "Test Data Generation"
+    description: |
+      Создать тестовые данные для валидации алгоритмов.
+      S&P 500, Gold, BTC - минимум 10 лет данных.
+    phase: 0
+    priority: critical
+    status: pending
+    assignee: null
+    depends_on: []
+    estimated_hours: 4
+    actual_hours: null
+    definition_of_done:
+      - "tests/fixtures/sp500.csv создан"
+      - "tests/fixtures/gold.csv создан"
+      - "tests/fixtures/btc.csv создан"
+      - "Скрипт генерации данных"
+    links:
+      tz: "docs/TZ.md#5-test-data"
+      mock_data: "docs/MOCK_DATA.md"
+    created: 2026-03-12
+    started: null
+    completed: null
+
+  # Phase 1: Infrastructure
+  - id: INF-001
+    title: "Go Project Setup"
+    description: |
+      Настроить Go проект с Clean Architecture.
+      Структура папок, базовые интерфейсы.
+    phase: 1
+    priority: critical
+    status: blocked
+    assignee: null
+    depends_on: [QS-001, QS-002, PH-001, TEST-001]
+    estimated_hours: 4
+    actual_hours: null
+    blocked_reason: "Phase 0 must complete first"
+    definition_of_done:
+      - "backend/cmd/api/main.go создан"
+      - "internal/domain/ структуры"
+      - "go.mod инициализирован"
+      - "make run-api работает"
+    links:
+      tz: "docs/TZ.md#4-architecture"
+      plan: "docs/PLAN.md#phase-1"
+    created: 2026-03-12
+    started: null
+    completed: null
+
+# Статистика
+statistics:
+  total_tasks: 5
+  completed: 0
+  in_progress: 0
+  pending: 4
+  blocked: 1
+  total_estimated_hours: 30
+  total_actual_hours: 0
