@@ -71,6 +71,60 @@
   Не удаляйте старые записи - они нужны для истории.
 -->
 
+### Запись #003 - Agent Handshake System
+
+---
+**Task ID:** DOC-003
+**Session ID:** session-003
+**Agent:** Claude (Anthropic)
+**Model:** claude-3-opus
+**Date:** 2026-03-12 17:00 - 18:30
+**Duration:** ~1.5 часа
+
+## Статус: ✅ COMPLETED
+
+## Definition of Done Check
+- [x] Создан HANDSHAKE.md с протоколом
+- [x] Создан session.yaml для трекинга сессий
+- [x] Создан scripts/session_manager.py
+- [x] Обновлён AGENT_INSTRUCTIONS.md с Rule #0
+- [x] Документированы все команды
+
+## Что сделано
+- Реализована система Agent Handshake
+- Создан механизм регистрации сессий
+- Добавлены блокировки задач
+- Реализован heartbeat механизм
+- Добавлен автоматический timeout release
+- Обновлён протокол работы агентов
+
+## Ключевые возможности
+1. **Регистрация:** `python scripts/session_manager.py register <task_id> "Agent Name" model`
+2. **Heartbeat:** Автоматический release через 2 часа неактивности
+3. **Блокировки:** Задача может быть занята только одним агентом
+4. **История:** Все сессии сохраняются в session.yaml
+
+## Изменённые файлы
+- `HANDSHAKE.md` - документация протокола
+- `session.yaml` - хранилище сессий
+- `scripts/session_manager.py` - Python-скрипт управления
+- `AGENT_INSTRUCTIONS.md` - добавлено Правило #0
+
+## Что делать дальше
+1. **TEST-001:** Создать тестовые данные
+2. **QS-001:** Python прототип QSpectrum
+3. **PH-001:** DTW прототип
+4. Протестировать session_manager.py
+
+## Связь с документацией
+- **TZ:** Раздел 3.1 - Backtesting Engine
+- **PLAN:** Phase 0 - недели 1-4
+
+## Блокеры / Вопросы
+- Нет блокеров. Agent Handshake готов к использованию.
+
+---
+
 ### Запись #002 - Система трекинга ИИ-агентов
 
 ---

@@ -6,18 +6,97 @@
 
 ---
 
+## 🤝 ПРАВИЛО #0: AGENT HANDSHAKE (ОБЯЗАТЕЛЬНО)
+
+### Перед началом ЛЮБОЙ работы:
+
+```
+┌─────────────────────────────────────────────────────────────┐
+│  ШАГ 1: ПРОВЕРИТЬ session.yaml                              │
+│  → Есть ли активные сессии?                                 │
+│  → Заблокирована ли задача?                                 │
+└─────────────────────────────────────────────────────────────┘
+                          │
+                          ▼
+┌─────────────────────────────────────────────────────────────┐
+│  ШАГ 2: ЗАРЕГИСТРИРОВАТЬСЯ                                   │
+│  → python scripts/session_manager.py register <task_id>     │
+│    "Agent Name" model                                       │
+│  → Получить session_id                                      │
+└─────────────────────────────────────────────────────────────┘
+                          │
+                          ▼
+┌─────────────────────────────────────────────────────────────┐
+│  ШАГ 3: ПОДДЕРЖИВАТЬ HEARTBEAT                               │
+│  → Каждые 30 минут обновлять heartbeat                      │
+│  → python scripts/session_manager.py heartbeat <session_id> │
+└─────────────────────────────────────────────────────────────┘
+                          │
+                          ▼
+┌─────────────────────────────────────────────────────────────┐
+│  ШАГ 4: ЗАВЕРШИТЬ СЕССИЮ                                     │
+│  → python scripts/session_manager.py complete <session_id>  │
+│    success "Notes"                                          │
+└─────────────────────────────────────────────────────────────┘
+```
+
+### Пример регистрации:
+
+```bash
+# 1. Проверить статус
+python scripts/session_manager.py status
+
+# 2. Зарегистрироваться
+python scripts/session_manager.py register QS-001 "Claude (Anthropic)" claude-3-opus
+
+# Вывод:
+# {
+#   "success": true,
+#   "session_id": "session-abc12345",
+#   "task_id": "QS-001",
+#   "action": "you_can_start_working"
+# }
+
+# 3. Начать работу
+python scripts/session_manager.py start session-abc12345
+
+# 4. Heartbeat каждые 30 минут
+python scripts/session_manager.py heartbeat session-abc12345
+
+# 5. Завершить
+python scripts/session_manager.py complete session-abc12345 success "QSpectrum prototype done"
+```
+
+### Если задача заблокирована:
+
+```json
+{
+  "success": false,
+  "error": "Task QS-001 is locked by GPT-4 (OpenAI)",
+  "locked_by": "GPT-4 (OpenAI)",
+  "session_id": "session-xyz789",
+  "action": "choose_different_task"
+}
+```
+
+**Действие:** Выбрать другую задачу из `tasks.yaml`.
+
+---
+
 ## 🚨 КРИТИЧЕСКИЕ ПРАВИЛА
 
 ### Правило #1: Порядок чтения
 
 ```
-1. progress.yaml → понять текущее состояние
-2. tasks.yaml → взять следующую задачу
-3. docs/TZ.md → понять требования
-4. docs/PLAN.md → понять контекст
-5. Выполнить задачу
-6. ОБНОВЛИТЬ progress.yaml
-7. ОБНОВЛИТЬ WORKLOG.md
+1. session.yaml → проверить блокировки
+2. progress.yaml → понять текущее состояние
+3. tasks.yaml → взять следующую задачу
+4. docs/TZ.md → понять требования
+5. docs/PLAN.md → понять контекст
+6. Выполнить задачу
+7. ОБНОВЛИТЬ progress.yaml
+8. ОБНОВЛИТЬ WORKLOG.md
+9. ЗАВЕРШИТЬ СЕССИЮ в session.yaml
 ```
 
 ### Правило #2: Definition of Done

@@ -6,10 +6,12 @@
 ---
 
 > 🤖 **Для ИИ агентов:**
+> - **[AGENT_INSTRUCTIONS.md](./AGENT_INSTRUCTIONS.md)** — 🚨 PROTOCOL (ОБЯЗАТЕЛЬНО прочитать)
+> - **[HANDSHAKE.md](./HANDSHAKE.md)** — 🤝 Регистрация сессий
 > - **[WORKLOG.md](./WORKLOG.md)** — 📋 Журнал работы (что сделано / что делать дальше)
-> - **[AGENTS.md](./AGENTS.md)** — открытый стандарт (OpenAI, Claude, Gemini, Qwen, Cursor, Copilot, Windsurf...)
-> - **[CLAUDE.md](./CLAUDE.md)** → редирект на AI.md
-> - **[AI.md](./AI.md)** — универсальная quick reference
+> - **[session.yaml](./session.yaml)** — 🔒 Активные сессии и блокировки
+> - **[tasks.yaml](./tasks.yaml)** — 📝 Очередь задач
+> - **[AGENTS.md](./AGENTS.md)** — открытый стандарт (OpenAI, Claude, Gemini, Qwen...)
 
 ---
 
