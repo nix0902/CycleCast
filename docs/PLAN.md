@@ -1,583 +1,202 @@
 # ДЕТАЛЬНЫЙ ПЛАН РАЗРАБОТКИ
 ## Система циклического анализа и прогнозирования финансовых рынков
-### (Аналог Timing Solution - Методология Ларри Вильямса)
+### CycleCast - Методология Ларри Вильямса v3.0
 
 ---
 
 ## 1. ОБЗОР ПРОЕКТА
 
-### 1.1 Название проекта
-**CycleCast** - Система циклического анализа и прогнозирования финансовых рынков
+| Параметр | Значение |
+|----------|----------|
+| Название | CycleCast v3.0 |
+| Длительность | 40 недель (вместо 34) |
+| Команда | 5-6 человек |
+| Стек | Go, Python, PostgreSQL, TimescaleDB, Redis, React |
 
-### 1.2 Цель проекта
-Создание высокопроизводительной системы для моделирования поведения финансовых рынков на основе **методологии Ларри Вильямса**:
+---
 
-- **Annual Cycle / Seasonality** - Сезонный анализ (30-50 лет данных)
-- **Decennial Patterns** - Десятилетние паттерны (годы 0-9)
-- **Composite Line** - Композитная линия прогноза (3 цикла)
-- **Phenomenological Model** - Исторические аналогии
-- **U-Turn** - Разворотные точки
-- **COT Analysis** - Анализ позиций Commercials
-- **Qualified Trend Break** - Квалифицированный пробой тренда
-- **Forward Testing Efficiency (FTE)** - Валидация моделей
-
-### 1.3 Технологический стек
+## 2. ТЕХНОЛОГИЧЕСКИЙ СТЕК
 
 | Компонент | Технология | Обоснование |
 |-----------|------------|-------------|
-| **Backend** | Go 1.22+ | Высокая производительность, параллелизм, статическая типизация |
-| **Frontend** | React + TypeScript + Vite | Современный UI, типобезопасность |
-| **Графики** | Lightweight Charts / TradingView Widget | Профессиональные финансовые графики |
-| **База данных** | PostgreSQL 16 + TimescaleDB | Временные ряды, высокая производительность |
-| **Кэш** | Redis 7 | Быстрый кэш для вычислений |
-| **Очередь задач** | Asynq (Go) | Фоновая обработка тяжёлых вычислений |
-| **API** | gRPC + REST (Gin) | Высокая скорость, совместимость |
-| **WebSocket** | Gorilla WebSocket | Real-time обновления |
-| **ML** | GoNum + Gonnet | Математические вычисления |
-| **Контейнеризация** | Docker + Docker Compose | Деплой и изоляция |
-| **Мониторинг** | Prometheus + Grafana | Метрики и визуализация |
-
-### 1.4 Архитектура системы
-
-```
-┌─────────────────────────────────────────────────────────────────────────────────────┐
-│                                    CLIENT LAYER                                      │
-│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐ │
-│  │   Web App       │  │   Desktop App   │  │   Mobile App    │  │   CLI Tool      │ │
-│  │   (React)       │  │   (Electron)    │  │   (React Native)│  │   (Go)          │ │
-│  └─────────────────┘  └─────────────────┘  └─────────────────┘  └─────────────────┘ │
-└─────────────────────────────────────────────────────────────────────────────────────┘
-                                          │
-                                          ▼
-┌─────────────────────────────────────────────────────────────────────────────────────┐
-│                                    GATEWAY LAYER                                     │
-│  ┌─────────────────────────────────────────────────────────────────────────────┐   │
-│  │                         API Gateway (Gin)                                    │   │
-│  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐        │   │
-│  │  │ REST API    │  │ gRPC API    │  │ WebSocket   │  │ Rate Limit  │        │   │
-│  │  │ /api/v1/*   │  │ :9090       │  │ /ws         │  │ Middleware  │        │   │
-│  │  └─────────────┘  └─────────────┘  └─────────────┘  └─────────────┘        │   │
-│  └─────────────────────────────────────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────────────────────────────────────┘
-                                          │
-                                          ▼
-┌─────────────────────────────────────────────────────────────────────────────────────┐
-│                                  SERVICES LAYER                                      │
-│  ┌─────────────────────────────────────────────────────────────────────────────┐   │
-│  │                     Методология Ларри Вильямса                               │   │
-│  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐        │   │
-│  │  │   Market    │  │   Annual    │  │  Decennial  │  │  Composite  │        │   │
-│  │  │   Data      │  │   Cycle     │  │  Patterns   │  │    Line     │        │   │
-│  │  │   Service   │  │   Service   │  │   Service   │  │   Service   │        │   │
-│  │  └─────────────┘  └─────────────┘  └─────────────┘  └─────────────┘        │   │
-│  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐        │   │
-│  │  │Phenomenolog.│  │   U-Turn    │  │    COT      │  │     FTE     │        │   │
-│  │  │   Model     │  │   Service   │  │  Service    │  │  Validator  │        │   │
-│  │  └─────────────┘  └─────────────┘  └─────────────┘  └─────────────┘        │   │
-│  └─────────────────────────────────────────────────────────────────────────────┘   │
-│  ┌─────────────────────────────────────────────────────────────────────────────┐   │
-│  │                          Background Workers                                   │   │
-│  │  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐  ┌─────────────┐        │   │
-│  │  │ Cycle Calc  │  │ Pattern     │  │ COT Import  │  │ Report      │        │   │
-│  │  │ Worker      │  │ Match Worker│  │ Worker      │  │ Gen Worker  │        │   │
-│  │  └─────────────┘  └─────────────┘  └─────────────┘  └─────────────┘        │   │
-│  └─────────────────────────────────────────────────────────────────────────────┘   │
-└─────────────────────────────────────────────────────────────────────────────────────┘
-                                          │
-                                          ▼
-┌─────────────────────────────────────────────────────────────────────────────────────┐
-│                                    DATA LAYER                                        │
-│  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐  ┌─────────────────┐ │
-│  │  PostgreSQL +   │  │     Redis       │  │   TimescaleDB   │  │   File Storage  │ │
-│  │  TimescaleDB    │  │     Cache       │  │   (Time Series) │  │   (MinIO/S3)    │ │
-│  │  :5432          │  │     :6379       │  │   Extension     │  │   :9000         │ │
-│  └─────────────────┘  └─────────────────┘  └─────────────────┘  └─────────────────┘ │
-└─────────────────────────────────────────────────────────────────────────────────────┘
-```
+| **Backend (Core)** | Go 1.22+ | Высокая производительность, параллелизм |
+| **Python Quant** | Python 3.11+ | NumPy, SciPy, Burg's MEM, DTW, Bootstrap |
+| **Frontend** | React 18 + TypeScript + Vite | Современный UI |
+| **База данных** | PostgreSQL 16 + TimescaleDB | Временные ряды |
+| **Кэш** | Redis 7 | Быстрый кэш |
+| **API** | REST (Gin) + gRPC | Совместимость |
+| **Secrets** | HashiCorp Vault | Безопасность |
 
 ---
 
-## 2. МЕТОДОЛОГИЯ ЛАРРИ ВИЛЬЯМСА
+## 3. ФАЗЫ РАЗРАБОТКИ
 
-### 2.1 Обзор подхода
+### Phase 0: Backtesting Engine & Math Prototyping (Недели 1-4) **НОВОЕ**
 
-Ларри Вильямс использует Timing Solution как инструмент для поиска временных точек разворота рынка. Его подход состоит из **пошаговой воронки фильтрации**:
+| Неделя | Задача | Результат |
+|--------|--------|-----------|
+| 1.1 | Python-прототип QSpectrum | Jupyter Notebook с Burg's MEM |
+| 1.2 | Python-прототип DTW | Валидация Phenomenological |
+| 1.3 | Robust Normalization (Percentile Rank) | Тест на GBTC данных |
+| 2.1 | Backtest Engine (Go) | Симуляция на истории |
+| 2.2 | Учёт комиссий/проскальзывания | Реалистичные метрики |
+| 3.1 | In-Sample / Out-of-Sample | Разделение данных |
+| 3.2 | Метрики (Sharpe, MaxDD) | Отчёт по стратегии |
+| 3.3 | Bootstrap CI (1000 итераций) | Доверительные интервалы |
+| 4.1 | Валидация на BTC/GBTC | Тест 2020-2025 |
+| 4.2 | Chow Test валидация | Структурный сдвиг 2024 |
+| 4.3 | Go/No-Go решение | Продолжать или стоп |
 
-```
-Шаг 1: Сезонность (Annual Cycle) → "ЧТО торговать?"
-Шаг 2: Циклы (Composite Line) → "КОГДА входить?"
-Шаг 3: Исторические аналогии (Phenomenological) → Проверка
-Шаг 4: COT (Commercials) → Подтверждение "Умными деньгами"
-Шаг 5: Qualified Trend Break → Точка входа
-```
-
-### 2.2 Ключевые компоненты
-
-| Компонент | Назначение | Данные |
-|-----------|------------|--------|
-| **Annual Cycle** | Сезонные тренды | 30-50 лет OHLC |
-| **Decennial Patterns** | 10-летние циклы | Годы по digit (0-9) |
-| **Composite Line** | Прогнозная линия | 3 цикла (short/medium/long) |
-| **Phenomenological** | Исторические аналогии | Корреляция паттернов |
-| **U-Turn** | Точки разворота | Экстремумы Composite Line |
-| **COT/Commercials** | Позиции хеджеров | Отчёты CFTC |
-| **FTE** | Валидация моделей | Walk-Forward тестирование |
-| **Qualified Trend Break** | Фильтрация пробоев | Циклы + ценовые уровни |
+**Критерий завершения:** Equity curve > 0 на out-of-sample данных, p-value < 0.05
 
 ---
 
-## 3. СТРУКТУРА ПРОЕКТА
+### Phase 1: Фундамент (Недели 5-8)
 
-### 3.1 Структура директорий
-
-```
-cyclecast/
-├── cmd/
-│   ├── api/                      # Точка входа API сервера
-│   │   └── main.go
-│   ├── worker/                   # Точка входа Worker
-│   │   └── main.go
-│   └── cli/                      # CLI инструмент
-│       └── main.go
-│
-├── internal/
-│   ├── domain/                   # Доменные модели и интерфейсы
-│   │   ├── entity/               # Сущности
-│   │   │   ├── market_data.go
-│   │   │   ├── cycle.go
-│   │   │   ├── projection.go
-│   │   │   └── pattern.go
-│   │   ├── repository/           # Интерфейсы репозиториев
-│   │   │   ├── market_data.go
-│   │   │   ├── cycle.go
-│   │   │   └── projection.go
-│   │   └── service/              # Интерфейсы сервисов
-│   │       ├── cycle_analyzer.go
-│   │       └── projection_engine.go
-│   │
-│   ├── service/                  # Реализация бизнес-логики
-│   │   ├── seasonality/
-│   │   │   ├── annual_cycle.go   # Annual Cycle - сезонность
-│   │   │   └── fte.go            # Forward Testing Efficiency
-│   │   ├── cycle/
-│   │   │   ├── qspectrum.go      # QSpectrum анализ
-│   │   │   └── composite.go      # Composite Line (3 цикла)
-│   │   ├── decennial/
-│   │   │   ├── patterns.go       # Десятилетние паттерны
-│   │   │   └── normalization.go  # Нормализация 0-1
-│   │   ├── phenomenological/
-│   │   │   ├── model.go          # Модели аналогий
-│   │   │   └── similarity.go     # DTW алгоритм
-│   │   ├── uturn/
-│   │   │   └── detector.go       # Детектор разворотных точек
-│   │   ├── cot/
-│   │   │   ├── parser.go         # Парсер COT отчётов
-│   │   │   ├── analyzer.go       # Анализ COT
-│   │   │   └── commercials.go    # Анализ Commercials
-│   │   ├── qtb/
-│   │   │   └── trend_break.go    # Qualified Trend Break
-│   │   └── projection/
-│   │       ├── engine.go         # Движок прогнозирования
-│   │       ├── wfa.go            # Walk-Forward Analysis
-│   │       └── signal.go         # Генерация сигналов
-│   │
-│   ├── repository/               # Реализация репозиториев
-│   │   ├── postgres/
-│   │   │   ├── market_data.go
-│   │   │   ├── cycle.go
-│   │   │   └── projection.go
-│   │   ├── redis/
-│   │   │   ├── cache.go
-│   │   │   └── session.go
-│   │   └── timescale/
-│   │       └── time_series.go
-│   │
-│   ├── transport/
-│   │   ├── rest/                 # REST API
-│   │   │   ├── handler/
-│   │   │   │   ├── market.go
-│   │   │   │   ├── analysis.go
-│   │   │   │   ├── projection.go
-│   │   │   │   └── report.go
-│   │   │   ├── middleware/
-│   │   │   │   ├── auth.go
-│   │   │   │   ├── ratelimit.go
-│   │   │   │   └── logging.go
-│   │   │   └── router.go
-│   │   ├── grpc/                 # gRPC API
-│   │   │   ├── server.go
-│   │   │   └── proto/
-│   │   └── websocket/            # WebSocket
-│   │       ├── hub.go
-│   │       └── client.go
-│   │
-│   └── infrastructure/
-│       ├── config/               # Конфигурация
-│       │   └── config.go
-│       ├── database/             # Подключение к БД
-│       │   ├── postgres.go
-│       │   └── redis.go
-│       ├── logger/               # Логирование
-│       │   └── logger.go
-│       └── metrics/              # Метрики
-│           └── prometheus.go
-│
-├── pkg/                          # Публичные пакеты
-│   ├── mathutil/
-│   │   ├── statistics.go         # Статистика
-│   │   ├── correlation.go        # Корреляция Пирсона
-│   │   └── normalization.go      # Нормализация 0-1
-│   └── finance/
-│       ├── indicators.go         # Технические индикаторы
-│       └── detrending.go         # Детрендинг данных
-│
-├── api/
-│   ├── proto/                    # Protobuf определения
-│   │   ├── market.proto
-│   │   ├── cycle.proto
-│   │   └── projection.proto
-│   └── openapi/                  # OpenAPI спецификация
-│       └── openapi.yaml
-│
-├── migrations/                   # Миграции БД
-│   ├── 001_init.up.sql
-│   ├── 001_init.down.sql
-│   └── ...
-│
-├── configs/                      # Конфигурационные файлы
-│   ├── config.yaml
-│   ├── config.dev.yaml
-│   └── config.prod.yaml
-│
-├── deployments/                  # Деплой
-│   ├── docker/
-│   │   ├── Dockerfile.api
-│   │   ├── Dockerfile.worker
-│   │   └── docker-compose.yaml
-│   └── kubernetes/
-│       └── ...
-│
-├── scripts/                      # Скрипты
-│   ├── migrate.sh
-│   └── seed_data.sh
-│
-├── docs/                         # Документация
-│   ├── PLAN.md
-│   ├── TZ.md
-│   ├── TECHNICAL_SOLUTION.md
-│   └── API.md
-│
-├── web/                          # Frontend
-│   ├── src/
-│   ├── public/
-│   ├── package.json
-│   └── vite.config.ts
-│
-├── go.mod
-├── go.sum
-├── Makefile
-└── README.md
-```
+| Неделя | Задача | Результат |
+|--------|--------|-----------|
+| 5.1 | Go проект, структура | go.mod, директории |
+| 5.2 | Docker Compose | PostgreSQL, Redis, API |
+| 6.1 | Схема БД + миграции | Таблицы, индексы |
+| 6.2 | Repository layer | CRUD операции |
+| 7.1 | Market Data Service | Импорт, API провайдеры |
+| 7.2 | Валидация данных | Очистка, нормализация |
+| 8.1 | API Gateway (Gin) | Роутинг, middleware |
+| 8.2 | Swagger/OpenAPI | Документация |
 
 ---
 
-## 4. ФАЗЫ РАЗРАБОТКИ
+### Phase 2: Annual Cycle & Seasonality (Недели 9-11)
 
-### Фаза 1: Фундамент (Недели 1-4)
-
-#### Неделя 1: Инфраструктура
-| Задача | Описание | Ожидаемый результат |
-|--------|----------|---------------------|
-| 1.1 | Настройка Go проекта | go.mod, структура директорий |
-| 1.2 | Docker Compose конфигурация | PostgreSQL, Redis, API |
-| 1.3 | Конфигурация (Viper) | config.yaml, загрузка |
-| 1.4 | Логирование (Zap) | Структурированные логи |
-| 1.5 | CI/CD (GitHub Actions) | Pipeline тестов |
-
-#### Неделя 2: База данных
-| Задача | Описание | Ожидаемый результат |
-|--------|----------|---------------------|
-| 2.1 | Схема БД (PostgreSQL) | Таблицы, индексы |
-| 2.2 | TimescaleDB extension | Гипертаблицы для временных рядов |
-| 2.3 | Миграции (golang-migrate) | SQL миграции |
-| 2.4 | Repository layer | CRUD операции |
-
-#### Неделя 3: Market Data Service
-| Задача | Описание | Ожидаемый результат |
-|--------|----------|---------------------|
-| 3.1 | Модель MarketData | Entity, DTO |
-| 3.2 | Импорт данных (CSV, JSON) | Парсеры |
-| 3.3 | API провайдеры (Yahoo, AlphaVantage) | Клиенты |
-| 3.4 | REST API endpoints | CRUD для market data |
-
-#### Неделя 4: API Gateway
-| Задача | Описание | Ожидаемый результат |
-|--------|----------|---------------------|
-| 4.1 | Gin router setup | Роутинг |
-| 4.2 | Middleware (auth, ratelimit) | Защита API |
-| 4.3 | Swagger документация | OpenAPI спецификация |
-| 4.4 | Error handling | Унифицированные ошибки |
+| Неделя | Задача | Результат |
+|--------|--------|-----------|
+| 9.1 | Загрузка 30-50 лет данных | Исторические OHLC |
+| 9.2 | Детрендинг + нормализация | Сезонная кривая |
+| 10.1 | FTE валидация | Корреляция прогноз/факт |
+| 10.2 | Адаптивный порог (Crypto 0.08) | Фильтрация моделей |
+| 11.1 | Seasonality Dashboard | Визуализация (React) |
 
 ---
 
-### Фаза 2: Annual Cycle и Seasonality (Недели 5-7)
+### Phase 3: QSpectrum & Composite Line (Недели 12-15)
 
-#### Неделя 5: Annual Cycle
-| Задача | Описание | Ожидаемый результат |
-|--------|----------|---------------------|
-| 5.1 | Загрузка исторических данных (30-50 лет) | Парсинг OHLC |
-| 5.2 | Детрендинг данных | Удаление глобального тренда |
-| 5.3 | Расчёт среднего по дням года | Сезонная кривая |
-| 5.4 | API endpoints | /api/v1/analysis/annual-cycle |
-
-**Формула Annual Cycle:**
-```
-AC(day) = Σ(year=1 to N) [Price_normalized(year, day)] / N
-
-Где:
-- Price_normalized = (Price - Min_year) / (Max_year - Min_year)
-- N = количество лет в выборке (30-50)
-```
-
-#### Неделя 6: Forward Testing Efficiency (FTE)
-| Задача | Описание | Ожидаемый результат |
-|--------|----------|---------------------|
-| 6.1 | Реализация FTE валидации | Корреляция прогноз/факт |
-| 6.2 | Walk-Forward тестирование | Оценка устойчивости |
-| 6.3 | Детекция "сломанных" сезонностей | Фильтрация моделей |
-| 6.4 | API endpoints | /api/v1/analysis/fte |
-
-**Формула FTE:**
-```
-FTE = Correlation(Projection_line, Actual_price)
-
-Критерии:
-- FTE > 0: модель работает
-- FTE < 0: сезонность "сломана", игнорировать
-```
-
-#### Неделя 7: Seasonality Dashboard
-| Задача | Описание | Ожидаемый результат |
-|--------|----------|---------------------|
-| 7.1 | Визуализация сезонных графиков | UI компоненты |
-| 7.2 | Фильтр по активам | Выбор инструментов |
-| 7.3 | Отображение FTE метрик | Индикаторы качества |
+| Неделя | Задача | Результат |
+|--------|--------|-----------|
+| 12.1 | Python gRPC сервис | Интеграция Go ↔ Python |
+| 12.2 | Циклическая корреляция | Спектр циклов |
+| 13.1 | Burg's MEM (Python) | Спектральная плотность |
+| 13.2 | WFA устойчивости | Валидация циклов |
+| 14.1 | Composite Line Generator | 3 волны, резонанс |
+| 14.2 | U-Turn Detection | Точки разворота |
+| 15.1 | API endpoints | /analysis/qspectrum, /composite |
 
 ---
 
-### Фаза 3: Composite Line (Недели 8-10)
+### Phase 4: Decennial Patterns (Недели 16-18)
 
-#### Неделя 8: QSpectrum (Циклическая корреляция + МЭМ)
-
-> **Важно:** QSpectrum **НЕ использует FFT (преобразование Фурье)**!
-> 
-> Обычный спектральный анализ (FFT) часто даёт запаздывание и плохо работает с нестационарными финансовыми данными. QSpectrum разработан специально для рынков.
-
-**Методы QSpectrum:**
-
-1. **Циклическая корреляция (автокорреляция с лагом)** — основной метод
-2. **МЭМ — Метод максимальной энтропии (Burg's method)** — для оценки спектральной плотности
-3. **Walk-Forward Analysis** — для оценки устойчивости циклов во времени
-
-| Задача | Описание | Ожидаемый результат |
-|--------|----------|---------------------|
-| 8.1 | Циклическая корреляция | Автокорреляция с лагом |
-| 8.2 | МЭМ (Burg's method) | Спектральная плотность |
-| 8.3 | Вычисление энергии цикла | Метрика значимости |
-| 8.4 | WFA устойчивости | Валидация циклов |
-| 8.5 | Выбор 3 доминантных циклов | short/medium/long |
-
-**Формулы QSpectrum:**
-
-```
-1. Циклическая корреляция (основной метод):
-   CyclicCorrelation(period) = Σ(t=period to N) [P(t) × P(t-period)] / (N - period)
-
-2. Энергия цикла:
-   Energy(period) = |CyclicCorrelation| × √(N/period) × WFA_Stability
-
-3. МЭМ — спектральная плотность мощности (опционально):
-   P(f) = σ² / |1 + Σ(k=1 to p) aₖ × e^(-i2πfk)|²
-   
-   Где:
-   - σ² — дисперсия ошибки предсказания
-   - aₖ — коэффициенты авторегрессии (Burg's method)
-   - p — порядок модели
-
-4. Walk-Forward Stability:
-   WFA_Stability = Count(Correlation > 0) / Total_Periods
-```
-
-**Ключевое отличие от FFT:**
-
-| FFT | QSpectrum |
-|-----|-----------|
-| Разлагает сигнал на частоты | Ищет устойчивые циклы |
-| Работает со стационарными данными | Адаптирован для нестационарных (цена) |
-| Даёт запаздывание | Минимизирует запаздывание |
-| Не учитывает "исчезающие циклы" | Оценивает устойчивость через WFA |
-| Одна частота = один результат | Энергия = устойчивость × корреляция |
-
-#### Неделя 9: Composite Line Generator
-| Задача | Описание | Ожидаемый результат |
-|--------|----------|---------------------|
-| 9.1 | Наложение 3 циклов | Короткий/средний/длинный |
-| 9.2 | Детекция точек резонанса | BUY/SELL сигналы |
-| 9.3 | API endpoints | /api/v1/analysis/composite |
-
-**Формула Composite Line:**
-```
-CL(t) = A₁sin(2πf₁t + φ₁) + A₂sin(2πf₂t + φ₂) + A₃sin(2πf₃t + φ₃)
-
-Где:
-- A = амплитуда цикла
-- f = частота (1/период)
-- φ = фаза
-
-Сигналы:
-- BUY: все 3 цикла направлены вверх (резонанс вверх)
-- SELL: все 3 цикла направлены вниз (резонанс вниз)
-```
-
-#### Неделя 10: U-Turn Detection
-| Задача | Описание | Ожидаемый результат |
-|--------|----------|---------------------|
-| 10.1 | Поиск экстремумов Composite Line | Дни разворота |
-| 10.2 | Анализ "кучности" разворотов | Confidence метрика |
-| 10.3 | API endpoints | /api/v1/analysis/uturn |
+| Неделя | Задача | Результат |
+|--------|--------|-----------|
+| 16.1 | Группировка по yearDigit | Паттерны 0-9 |
+| 16.2 | Нормализация | Масштаб 0-1 |
+| 17.1 | Корреляция с текущим годом | Similarity Score |
+| 17.2 | API endpoints | /analysis/decennial |
 
 ---
 
-### Фаза 4: Decennial Patterns (Недели 11-13)
+### Phase 5: Phenomenological Model (Недели 19-21)
 
-| Задача | Описание | Ожидаемый результат |
-|--------|----------|---------------------|
-| 11.1 | Группировка по yearDigit | Алгоритм группировки (0-9) |
-| 11.2 | Нормализация данных | Масштабирование 0-1 |
-| 11.3 | Расчёт усреднённых паттернов | Для каждой цифры 0-9 |
-| 11.4 | Корреляция с текущим годом | Сравнение с историей |
-| 11.5 | API endpoints | /api/v1/analysis/decennial |
-
-**Формула Decennial Pattern:**
-```
-DP(digit, day) = Average(Normalized_Price(year, day)) for all years where year%10 == digit
-
-Нормализация:
-NormalizedPrice = (Price - Min_year) / (Max_year - Min_year)
-```
+| Неделя | Задача | Результат |
+|--------|--------|-----------|
+| 19.1 | DTW (Python) | Поиск аналогий |
+| 19.2 | Фильтр по Decennial | yearDigit фильтр |
+| 20.1 | Best Matches Ranking | Топ совпадений |
+| 20.2 | Проекция продолжения | Прогноз |
+| 21.1 | API endpoints | /analysis/phenom |
 
 ---
 
-### Фаза 5: Phenomenological Model (Недели 14-16)
+### Phase 6: COT/GBTC Analysis (Недели 22-25)
 
-| Задача | Описание | Ожидаемый результат |
-|--------|----------|---------------------|
-| 14.1 | DTW (Dynamic Time Warping) | Поиск похожих паттернов |
-| 14.2 | Фильтр по Decennial циклу | Годы с тем же yearDigit |
-| 14.3 | Training Interval | Настройка окна обучения |
-| 14.4 | Best Matches Ranking | Топ похожих участков |
-| 14.5 | API endpoints | /api/v1/analysis/phenomenological |
-
-**Алгоритм Phenomenological:**
-```
-1. Взять Training Interval (последние N баров)
-2. Нормализовать (0-1)
-3. Сканировать историю на похожие участки (DTW)
-4. Фильтровать по Decennial (тот же yearDigit)
-5. Ранжировать по корреляции Пирсона
-6. Показать Best Matches и продолжение паттерна
-```
+| Неделя | Задача | Результат |
+|--------|--------|-----------|
+| 22.1 | Парсер CFTC COT | Импорт отчётов |
+| 22.2 | Парсер GBTC/ETF | Grayscale API, Yahoo |
+| 23.1 | Миграция БД (proxy_type и т.д.) | Новые поля |
+| 23.2 | analyzeTrustPremium | Логика GBTC Index |
+| 23.3 | regime_change_date логика | Учёт ETF конвертации |
+| 23.4 | signal_direction (-1 для GBTC) | Инверсия сигнала |
+| 24.1 | Robust Normalization (Percentile Rank) | Устойчивость к выбросам |
+| 24.2 | Autocorrelation Filter (min 21 день) | Фильтрация кластеров |
+| 24.3 | Liquidity-Weighted Aggregation | GBTC + IBIT + FBTC |
+| 25.1 | Statistical Significance (p-value, CI) | Bootstrap 1000 итераций |
+| 25.2 | Тестирование 2020-2025 | Backtest GBTC proxy |
 
 ---
 
-### Фаза 6: COT Analysis (Недели 17-19)
+### Phase 7: Risk Management (Недели 26-27) **НОВОЕ**
 
-| Задача | Описание | Ожидаемый результат |
-|--------|----------|---------------------|
-| 17.1 | Парсер COT отчётов CFTC | Импорт данных |
-| 17.2 | Анализ Commercials | Позиции хеджеров |
-| 17.3 | COT Index расчёт | Осциллятор 0-100 |
-| 17.4 | Детекция экстремумов | Пороги 80/20 |
-| 17.5 | API endpoints | /api/v1/cot |
-
-**Формула COT Index:**
-```
-COT_Index = (Current_Net - Min_N) / (Max_N - Min_N) * 100
-
-Где:
-- Current_Net = Commercials_Long - Commercials_Short
-- N = период (обычно 26 или 52 недели)
-
-Сигналы:
-- COT_Index > 80: Commercials в экстремальных покупках
-- COT_Index < 20: Commercials в экстремальных продажах
-```
+| Неделя | Задача | Результат |
+|--------|--------|-----------|
+| 26.1 | Position Sizing | Расчёт размера |
+| 26.2 | Stop-Loss / Take-Profit | Уровни выхода |
+| 27.1 | Max Drawdown лимит | Защита капитала |
+| 27.2 | Signal Decay Function | Затухание сигнала |
 
 ---
 
-### Фаза 7: Qualified Trend Break (Недели 20-21)
+### Phase 8: Qualified Trend Break (Недели 28-29)
 
-| Задача | Описание | Ожидаемый результат |
-|--------|----------|---------------------|
-| 20.1 | Детекция пробоев трендовых линий | Алгоритм пробоя |
-| 20.2 | Фильтрация через Composite Line | Подтверждение циклом |
-| 20.3 | Генерация сигналов | Confirm / False |
-| 20.4 | API endpoints | /api/v1/analysis/qtb |
-
-**Логика Qualified Trend Break:**
-```
-QTB = Confirm если:
-  - Цена пробивает трендовую линию
-  - И Composite Line (цикл) направлен в ту же сторону
-
-QTB = False если:
-  - Цена пробивает уровень
-  - Но Composite Line направлен в противоположную сторону
-```
+| Неделя | Задача | Результат |
+|--------|--------|-----------|
+| 28.1 | Детекция пробоев | Трендовые линии |
+| 28.2 | Фильтрация Composite | Confirm / False |
+| 29.1 | API endpoints | /analysis/qtb |
 
 ---
 
-### Фаза 8: Integration & Workflow (Недели 22-24)
+### Phase 9: Integration & Workflow (Недели 30-32)
 
-| Задача | Описание | Ожидаемый результат |
-|--------|----------|---------------------|
-| 22.1 | Объединение всех компонентов | Единый workflow |
-| 22.2 | Автоматический выбор активов | По Seasonality + FTE |
-| 22.3 | Генерация прогнозов | Composite + Phenomenological |
-| 22.4 | Подтверждение COT | Финальный фильтр |
-
-**Итоговый алгоритм Ларри Вильямса:**
-```
-1. Annual Cycle: Найти актив с сильной сезонностью (FTE > 0)
-2. Decennial: Определить контекст текущего года
-3. Composite Line: Найти точки резонанса (когда входить)
-4. Phenomenological: Проверить исторические аналогии
-5. COT: Убедиться, что Commercials покупают/продают
-6. QTB: Дождаться подтверждения пробоя
-7. Исполнение: Вход в сделку
-```
+| Неделя | Задача | Результат |
+|--------|--------|-----------|
+| 30.1 | Объединение всех модулей | Единый workflow |
+| 30.2 | Автоматический выбор активов | Seasonality + FTE |
+| 31.1 | Генерация сигналов | Composite + COT + Phenom |
+| 31.2 | Risk интеграция | Позиция на сигнал |
+| 31.3 | Statistical Validation | p-value, CI |
+| 32.1 | Paper Trading режим | Демо-счета |
 
 ---
 
-### Фаза 9: Frontend (Недели 25-30)
+### Phase 10: Frontend (Недели 33-38)
 
-| Задача | Описание | Ожидаемый результат |
-|--------|----------|---------------------|
-| 25-26 | React + TypeScript настройка | Vite, компоненты |
-| 27-28 | Графики (Lightweight Charts) | OHLC, Projection Line |
-| 29 | Dashboard | Обзор, виджеты |
-| 30 | Отчёты | PDF генерация |
+| Неделя | Задача | Результат |
+|--------|--------|-----------|
+| 33-34 | React + TypeScript | Vite, компоненты |
+| 35-36 | Графики (Lightweight Charts) | OHLC, Projection |
+| 37 | Dashboard | Обзор, виджеты |
+| 38 | Отчёты + Backtest UI | Визуализация метрик, bootstrap CI |
 
 ---
 
-### Фаза 10: Оптимизация и Тестирование (Недели 31-34)
+### Phase 11: Оптимизация и Тестирование (Недели 39-40)
 
-| Задача | Описание | Ожидаемый результат |
-|--------|----------|---------------------|
-| 31 | Unit тесты | Покрытие > 80% |
-| 32 | Integration тесты | API тесты |
-| 33 | Load testing | k6, оптимизация |
-| 34 | Documentation | Godoc, API docs |
+| Неделя | Задача | Результат |
+|--------|--------|-----------|
+| 39 | Unit тесты | Покрытие > 80% |
+| 40 | Integration тесты + Load testing | k6, Godoc, API docs |
+
+---
+
+## 4. КОМАНДА И РОЛИ
+
+| Роль | Количество | Обязанности |
+|------|------------|-------------|
+| Tech Lead / Architect | 1 | Архитектура, код-ревью, Go/Python |
+| Backend Developer (Go) | 2 | API, сервисы, БД |
+| Quant Developer (Python) | 1 | QSpectrum, DTW, ML, Bootstrap |
+| Frontend Developer | 1 | React, графики |
+| DevOps | 1 | CI/CD, инфраструктура, Vault |
+| QA | 1 | Тестирование, бэктест валидация |
 
 ---
 
@@ -586,9 +205,10 @@ QTB = False если:
 ### 5.1 Производительность
 | Метрика | Цель |
 |---------|------|
-| Время отклика API | < 100ms (p95) |
+| API Response Time | < 100ms (p95) |
+| Python gRPC call | < 500ms |
 | Annual Cycle расчёт | < 200ms |
-| Composite Line генерация | < 100ms |
+| Composite Line | < 100ms |
 | WebSocket latency | < 10ms |
 
 ### 5.2 Надёжность
@@ -598,122 +218,177 @@ QTB = False если:
 | Error rate | < 0.1% |
 | Data integrity | 100% |
 
+### 5.3 Trading Quality
+| Метрика | Цель |
+|---------|------|
+| Backtest Sharpe | > 1.0 |
+| Max Drawdown | < 20% |
+| Win Rate | > 50% |
+| Out-of-Sample Correlation | > 0.08 (Crypto), > 0.0 (TradFi) |
+| p-value | < 0.05 |
+| Bootstrap CI (95%) | Положительный return |
+
 ---
 
 ## 6. РИСКИ И МИТИГАЦИЯ
 
 | Риск | Вероятность | Влияние | Митигация |
 |------|-------------|---------|-----------|
-| Сложность алгоритмов | Высокая | Высокое | Поэтапная разработка, прототипы |
-| Неточность прогнозов | Средняя | Высокое | WFA, FTE валидация, множественные фильтры |
-| Производительность | Средняя | Среднее | Кэширование, оптимизация |
-| Качество данных | Низкая | Высокое | Валидация, множественные источники |
+| Сложность математики (Burg's MEM) | Высокая | Высокое | Python-прототип до Go-кода |
+| Неточность прогнозов | Средняя | Высокое | FTE, WFA, Backtest валидация |
+| Качество данных (30-50 лет) | Средняя | Высокое | Множественные источники, валидация |
+| GBTC структурный слом (2024) | Высокая | Среднее | regime_change_date + Chow Test |
+| Производительность DTW | Средняя | Среднее | Ограничение окна, кэширование |
+| Переобучение стратегии | Средняя | Высокое | In-Sample / Out-of-Sample разделение |
+| Bootstrap вычислительно тяжёл | Средняя | Среднее | Только Python, кэширование результатов |
+| Autocorrelation сигналов | Средняя | Среднее | min_signal_distance_days = 21 |
 
 ---
 
-## 7. КОМАНДА И РОЛИ
-
-| Роль | Количество | Обязанности |
-|------|------------|-------------|
-| Tech Lead / Architect | 1 | Архитектура, код-ревью |
-| Backend Developer (Go) | 2 | API, сервисы, алгоритмы |
-| Frontend Developer | 1 | React, графики |
-| DevOps | 1 | CI/CD, инфраструктура |
-| QA | 1 | Тестирование |
-
----
-
-## 8. ИТОГОВАЯ ОЦЕНКА
+## 7. ИТОГОВАЯ ОЦЕНКА
 
 | Этап | Длительность |
 |------|--------------|
-| Фаза 1: Фундамент | 4 недели |
-| Фаза 2: Annual Cycle & Seasonality | 3 недели |
-| Фаза 3: Composite Line | 3 недели |
-| Фаза 4: Decennial Patterns | 3 недели |
-| Фаза 5: Phenomenological Model | 3 недели |
-| Фаза 6: COT Analysis | 3 недели |
-| Фаза 7: Qualified Trend Break | 2 недели |
-| Фаза 8: Integration & Workflow | 3 недели |
-| Фаза 9: Frontend | 6 недель |
-| Фаза 10: Тестирование | 4 недели |
-| **ИТОГО** | **34 недели (~8 месяцев)** |
+| Phase 0: Backtest & Math | 4 недели |
+| Phase 1: Фундамент | 4 недели |
+| Phase 2: Annual Cycle | 3 недели |
+| Phase 3: QSpectrum & Composite | 4 недели |
+| Phase 4: Decennial | 3 недели |
+| Phase 5: Phenomenological | 3 недели |
+| Phase 6: COT/GBTC | 4 недели |
+| Phase 7: Risk Management | 2 недели |
+| Phase 8: QTB | 2 недели |
+| Phase 9: Integration | 3 недели |
+| Phase 10: Frontend | 6 недель |
+| Phase 11: Тестирование | 2 недели |
+| **ИТОГО** | **40 недель (~10 месяцев)** |
+
+---
+
+## 8. ЧЕК-ЛИСТ ПЕРЕД СТАРТОМ (SPRINT 1)
+
+- [ ] Python-прототип QSpectrum в Jupyter
+- [ ] Python-прототип DTW в Jupyter
+- [ ] Backtest Engine на Python/Go
+- [ ] Валидация на BTC/GBTC 2020-2025
+- [ ] Robust Normalization (Percentile Rank) тест
+- [ ] Bootstrap CI (1000 итераций) тест
+- [ ] Chow Test валидация структурного сдвига
+- [ ] Закупка/подготовка данных (30 лет TradFi, 15 лет Crypto)
+- [ ] Внесение изменений в TZ.md и TECHNICAL_SOLUTION.md
+- [ ] Команда укомплектована (Go + Python разработчики)
+- [ ] HashiCorp Vault настроен для secrets
+- [ ] CI/CD pipeline готов
 
 ---
 
 ## 9. ФОРМУЛЫ КОМПОНЕНТОВ
 
-### 9.1 Annual Cycle (Сезонность)
+### 9.1 Annual Cycle
 ```
-AC(day) = Σ(year=1 to N) [NormalizedPrice(year, day)] / N
+AC(day) = Σ NormalizedPrice(year, day) / N
 
-Detrending:
-Detrended = Price - Trend_MA
+FTE (Forward Testing Efficiency):
+FTE = Correlation(Projection, Actual)
 
-Нормализация:
-NormalizedPrice = (Price - Min_year) / (Max_year - Min_year)
-```
-
-### 9.2 Forward Testing Efficiency (FTE)
-```
-FTE = Correlation_Pearson(Projection_line, Actual_price)
-
-r = Σ(xᵢ - x̄)(yᵢ - ȳ) / √[Σ(xᵢ - x̄)² × Σ(yᵢ - ȳ)²]
+Пороги:
+- TradFi: FTE > 0.0
+- Crypto: FTE > 0.08
 ```
 
-### 9.3 QSpectrum (Циклическая корреляция + МЭМ)
+### 9.2 QSpectrum (Циклическая корреляция + МЭМ)
 ```
-QSpectrum ≠ FFT! 
-Разработан специально для нестационарных финансовых данных.
+QSpectrum ≠ FFT! Разработан для нестационарных финансовых данных.
 
-1. Циклическая корреляция (основной метод):
-   CyclicCorrelation(period) = Σ(t=period to N) [P(t) × P(t-period)] / (N - period)
+1. Циклическая корреляция:
+   CyclicCorrelation(period) = Σ P(t) × P(t-period) / (N - period)
 
 2. Энергия цикла:
-   Energy(period) = |CyclicCorrelation| × √(N/period) × WFA_Stability
+   Energy(period) = |C| × √(N/period) × WFA_Stability
 
-3. МЭМ — спектральная плотность мощности (Burg's method):
-   P(f) = σ² / |1 + Σ(k=1 to p) aₖ × e^(-i2πfk)|²
-   
-   Где:
-   - σ² — дисперсия ошибки предсказания
-   - aₖ — коэффициенты авторегрессии
-   - p — порядок модели
+3. МЭМ (Burg's method):
+   P(f) = σ² / |1 + Σ aₖ × e^(-i2πfk)|²
 
 4. Walk-Forward Stability:
-   WFA_Stability = Count(Correlation > 0) / Total_Periods
+   WFA = Count(C > 0) / Total
 ```
 
-### 9.4 Composite Line
+### 9.3 Composite Line
 ```
-CL(t) = Σᵢ Aᵢsin(2πfᵢt + φᵢ)
+CL(t) = A₁sin(2πf₁t + φ₁) + A₂sin(2πf₂t + φ₂) + A₃sin(2πf₃t + φ₃)
 
-Где i = 1, 2, 3 (short, medium, long cycle)
-
-Резонанс:
-- BUY: CL'(t) > 0 для всех 3 циклов
-- SELL: CL'(t) < 0 для всех 3 циклов
+Сигналы:
+- BUY:  все 3 цикла направлены вверх
+- SELL: все 3 цикла направлены вниз
 ```
 
-### 9.5 Decennial Patterns
+### 9.4 Decennial Patterns
 ```
 DP(digit, day) = Average(NormalizedPrice) for years where year%10 == digit
-
-Confidence = StdDev / Mean × 100%
 ```
 
-### 9.6 COT Index
+### 9.5 COT/GBTC Index (НОВОЕ)
 ```
+Futures (COT):
 COT_Index = (Current_Net - Min_N) / (Max_N - Min_N) × 100
 
-Где:
-- Net = Commercials_Long - Commercials_Short
-- N = период (26 или 52 недели)
+GBTC/ETF (Percentile Rank):
+PR(X) = Count(x_i < X) / N × 100%
+
+Signal Direction:
+- Futures: +1 (прямая)
+- GBTC: -1 (инверсия)
+
+Liquidity-Weighted Aggregation:
+Index_final = Σ(w_i × Index_i) / Σw_i
 ```
 
-### 9.7 DTW (Dynamic Time Warping)
+### 9.6 Risk Management (НОВОЕ)
 ```
-DTW(i,j) = |xᵢ - yⱼ| + min(DTW(i-1,j), DTW(i,j-1), DTW(i-1,j-1))
+Position Size = RiskAmount / StopDistance
 
-Similarity = 1 / (1 + DTW_distance)
+Signal Decay:
+Effective_Strength = Initial × 0.5^(Age / HalfLife)
+
+Max Drawdown Protection:
+Если CurrentDrawdown >= MaxDrawdown → Нет новых позиций
 ```
+
+### 9.7 Statistical Validation (НОВОЕ)
+```
+Bootstrap CI (95%):
+1. Resample returns с заменой (1000 итераций)
+2. CI = [P_2.5, P_97.5]
+
+p-value:
+p = Count(bootstrap_mean <= 0) / iterations
+
+Chow Test (Structural Break):
+F = [(RSS_full - (RSS_1 + RSS_2)) / k] / [(RSS_1 + RSS_2) / (n - 2k)]
+```
+
+---
+
+## 10. ЗАКЛЮЧИТЕЛЬНОЕ СЛОВО
+
+**CycleCast v3.0** — это production-ready система для циклического анализа рынков с учётом:
+- ✅ Традиционных активов (30-50 лет данных, COT)
+- ✅ Криптовалют (10-15 лет, GBTC/ETF proxy)
+- ✅ Backtesting Engine до продакшена
+- ✅ Risk Management для защиты капитала
+- ✅ Python для сложной математики (Burg's MEM, DTW, Bootstrap)
+- ✅ Go для высокопроизводительного ядра
+- ✅ Статистическая значимость (p-value, CI)
+- ✅ Robust нормализация (Percentile Rank)
+- ✅ Autocorrelation Filter (min 21 день)
+- ✅ Liquidity-Weighted Aggregation
+- ✅ Signal Decay Function
+- ✅ Chow Test для структурных сдвигов
+
+**Зелёный свет.** Приступайте к **Phase 0**.
+
+---
+
+**Дата утверждения:** 12 марта 2026  
+**Версия документации:** 3.0  
+**Статус:** ✅ УТВЕРЖДЕНО К РАЗРАБОТКЕ
