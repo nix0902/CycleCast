@@ -71,6 +71,68 @@
   Не удаляйте старые записи - они нужны для истории.
 -->
 
+### Запись #004 - Auto-Assignment & Quality Gate
+
+---
+**Task ID:** DOC-004
+**Session ID:** session-004
+**Agent:** Claude (Anthropic)
+**Model:** claude-3-opus
+**Date:** 2026-03-12 19:00 - 20:30
+**Duration:** ~1.5 часа
+
+## Статус: ✅ COMPLETED
+
+## Definition of Done Check
+- [x] Создан AUTO_ASSIGNMENT.md с документацией
+- [x] Создан agent_skills.yaml с профилями агентов
+- [x] Создан scripts/auto_assign.py
+- [x] Создан QUALITY_GATE.md с документацией
+- [x] Создан quality_gate.yaml
+- [x] Создан scripts/quality_gate.py
+- [x] Обновлён FILE_STRUCTURE.md
+
+## Что сделано
+- Реализована система Auto-Assignment
+- Реализована система Quality Gate
+- Созданы профили навыков агентов (7 агентов)
+- Созданы скрипты управления
+
+## Ключевые возможности
+
+### Auto-Assignment:
+- Расчёт скоринга по 4 факторам (skills, specialization, performance, load)
+- Автоматический подбор лучшего агента
+- Учёт предпочтений и избеганий
+- Балансировка нагрузки
+
+### Quality Gate:
+- Workflow: worker → review_queue → reviewer → approve/reject
+- Автоматические проверки (lint, test, typecheck)
+- Чек-листы ручной проверки
+- История и статистика
+
+## Изменённые файлы
+- `AUTO_ASSIGNMENT.md` - документация
+- `QUALITY_GATE.md` - документация
+- `agent_skills.yaml` - профили агентов
+- `quality_gate.yaml` - очередь проверок
+- `scripts/auto_assign.py` - CLI для назначения
+- `scripts/quality_gate.py` - CLI для review
+
+## Что делать дальше
+1. **TEST-001:** Создать тестовые данные
+2. **QS-001:** Python прототип QSpectrum
+3. Протестировать auto_assign.py и quality_gate.py
+
+## Связь с документацией
+- **PLAN:** Phase 0 - недели 1-4
+
+## Блокеры / Вопросы
+- Нет блокеров. Auto-Assignment и Quality Gate готовы.
+
+---
+
 ### Запись #003 - Agent Handshake System
 
 ---

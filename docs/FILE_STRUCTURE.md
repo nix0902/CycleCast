@@ -16,15 +16,19 @@ cyclecast/
 ├── docs/                        # Project Documentation
 ├── scripts/                     # Utility Scripts
 ├── configs/                     # Configuration Files
-├── AGENTS.md                    # Open standard for AI agents (OpenAI, Claude, Gemini, Qwen, Cursor...)
+├── AGENTS.md                    # Open standard for AI agents
 ├── AGENT_INSTRUCTIONS.md        # Strict protocol for AI agents (MUST READ)
 ├── HANDSHAKE.md                 # Agent registration and session protocol
-├── WORKLOG.md                   # Agent work log (what done / what's next)
+├── AUTO_ASSIGNMENT.md           # Automatic task assignment
+├── QUALITY_GATE.md              # Second agent review system
+├── WORKLOG.md                   # Agent work log
 ├── session.yaml                 # Active sessions and locks
 ├── tasks.yaml                   # Machine-readable task queue
+├── quality_gate.yaml            # Review queue and history
+├── agent_skills.yaml            # Agent skills and preferences
 ├── progress.yaml                # Current project progress
 ├── AI.md                        # Universal AI Agent Quick Reference
-├── CLAUDE.md                    # Redirect to AI.md (backward compatibility)
+├── CLAUDE.md                    # Redirect to AI.md
 ├── README.md                    # Project Overview
 ├── Makefile                     # Build Commands
 ├── docker-compose.yml           # Local Development
